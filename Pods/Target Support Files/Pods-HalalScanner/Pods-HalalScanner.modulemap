@@ -1,0 +1,6 @@
+framework module Pods_HalalScanner {
+  umbrella header "Pods-HalalScanner-umbrella.h"
+
+  export *
+  module * { export * }
+}
