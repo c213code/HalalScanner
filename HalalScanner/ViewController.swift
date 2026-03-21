@@ -32,8 +32,9 @@ class ViewController: UIViewController {
     let caloriesLabel = PaddingLabel()
     
     
-    let rf = RoboflowMobile(apiKey: Secrets.roboflowKey)
-    var rfModel: RFModel?
+    var rfModel: RFModel? {
+        return ModelManager.shared.rfModel
+    }
     
     let overlayView = UIView()
     
@@ -41,8 +42,31 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        setupCamera()
         setupUI()
+        setupCamera()
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.captureSession.startRunning()
+        }
+        
+        print("IS READY:", ModelManager.shared.isReady)
+        if ModelManager.shared.isReady {
+                isModelReady = true
+                captureButton.isEnabled = true
+                statusLabel.text = "Ready to scan ✅"
+            } else {
+                statusLabel.text = "Preparing scanner..."
+                captureButton.isEnabled = false
+                
+                Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
+                    if ModelManager.shared.isReady {
+                        self?.isModelReady = true
+                        self?.captureButton.isEnabled = true
+                        self?.statusLabel.text = "Ready to scan ✅"
+                        timer.invalidate()
+                    }
+                }
+            }
     }
     
     override func viewDidLayoutSubviews() {
@@ -66,19 +90,16 @@ class ViewController: UIViewController {
             }
             
             previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-            previewLayer.frame = view.bounds
             previewLayer.videoGravity = .resizeAspectFill
             
-            view.layer.addSublayer(previewLayer)
-            
-            DispatchQueue.global(qos: .userInitiated).async {
-                self.captureSession.startRunning()
+            DispatchQueue.main.async {
+                self.previewLayer.frame = self.view.bounds
+                self.view.layer.addSublayer(self.previewLayer)
             }
-        }
-        catch{
+            
+        } catch {
             print("Camera error")
         }
-        
     }
     func setupUI() {
         
@@ -140,7 +161,7 @@ class ViewController: UIViewController {
         setupScannerCorners()
         setupProductInfo()
         
-        loadRoboflowModel()
+        
         
         setupOverlay()
        
@@ -312,27 +333,7 @@ class ViewController: UIViewController {
     }
 
     
-    func loadRoboflowModel() {
-        statusLabel.text = "Preparing scanner..."
-        captureButton.isEnabled = false
 
-        rf.load(model: "food-ksjo4", modelVersion: 3) { [weak self] model, error, _, _ in
-            guard let self = self else { return }
-
-            if let error = error {
-                print("ROBOFLOW LOAD ERROR:", error.localizedDescription)
-                DispatchQueue.main.async {
-                    self.statusLabel.text = "Model load error"
-                }
-                return
-            }
-
-            model?.configure(threshold: 0.4, overlap: 0.3, maxObjects: 3)
-            self.rfModel = model
-
-            self.warmUpModel()
-        }
-    }
     func warmUpModel() {
         guard let rfModel = rfModel else { return }
 

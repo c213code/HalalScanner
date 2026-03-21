@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 class AuthVC: UIViewController {
     
     let emailField = UITextField()
@@ -84,7 +85,7 @@ class AuthVC: UIViewController {
 
             ])
         
-        loginButton.setTitle("Tiркелу", for: .normal)
+        loginButton.setTitle("Кіру", for: .normal)
         loginButton.setTitleColor(.white, for: .normal)
         loginButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
         loginButton.backgroundColor =  UIColor(red: 0.11, green: 0.62, blue: 0.46, alpha: 1)
@@ -95,7 +96,7 @@ class AuthVC: UIViewController {
             ])
         
         
-        registerButton.setTitle("Кіру", for: .normal)
+        registerButton.setTitle("Тіркелу", for: .normal)
         registerButton.setTitleColor(.white, for: .normal)
         registerButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
         registerButton.backgroundColor = .white
@@ -108,6 +109,9 @@ class AuthVC: UIViewController {
             
 
             ])
+        
+        registerButton.addTarget(self, action: #selector(registerTapped), for: .touchUpInside)
+        loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
 
         
         stack.axis = .vertical
@@ -149,6 +153,9 @@ class AuthVC: UIViewController {
             stack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             stack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24)
         ])
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tap)
 
 
         
@@ -196,6 +203,55 @@ class AuthVC: UIViewController {
         return container
     }
     
+    @objc func registerTapped() {
+        
+        guard let email = emailField.text, !email.isEmpty,
+              let password = passwordFiled.text, !password.isEmpty else {
+            return
+        }
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            if let error = error {
+                print("Ошибка:", error.localizedDescription)
+                return
+            }
+            print("Зарегистрирован:", result?.user.email ?? "")
+            
+            DispatchQueue.main.async {
+                let vc = ViewController()
+                let nav = UINavigationController(rootViewController: vc)
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: true)
+            }
+        }
+        
+    }
+    
+    @objc func loginTapped() {
+        
+        guard let email = emailField.text, !email.isEmpty,
+              let password = passwordFiled.text, !password.isEmpty else {
+            return
+        }
+        Auth.auth().signIn(withEmail: email, password: password) { result, error in
+            if let error = error {
+                print("Ошибка:", error.localizedDescription)
+                return
+            }
+            print("Зашел:", result?.user.email ?? "")
+            
+            DispatchQueue.main.async {
+                let vc = ViewController()
+                let nav = UINavigationController(rootViewController: vc)
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: true)
+            }
+
+        }
+        
+    }
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
     
 }
 
