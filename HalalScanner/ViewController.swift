@@ -10,6 +10,8 @@ import AVFoundation
 //import Vision
 //import CoreML
 import Roboflow
+import FirebaseFirestore
+import FirebaseAuth
 
 class ViewController: UIViewController {
 
@@ -41,32 +43,35 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         setupUI()
-        setupCamera()
 
-        DispatchQueue.global(qos: .userInitiated).async {
-            self.captureSession.startRunning()
-        }
-        
-        print("IS READY:", ModelManager.shared.isReady)
+        captureButton.isEnabled = false
+        statusLabel.text = "Preparing scanner..."
+
         if ModelManager.shared.isReady {
-                isModelReady = true
-                captureButton.isEnabled = true
-                statusLabel.text = "Ready to scan ✅"
-            } else {
-                statusLabel.text = "Preparing scanner..."
-                captureButton.isEnabled = false
-                
-                Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
-                    if ModelManager.shared.isReady {
-                        self?.isModelReady = true
-                        self?.captureButton.isEnabled = true
-                        self?.statusLabel.text = "Ready to scan ✅"
-                        timer.invalidate()
+            isModelReady = true
+            captureButton.isEnabled = true
+            statusLabel.text = "Ready to scan ✅"
+        } else {
+            DispatchQueue.global(qos: .userInitiated).async {
+                ModelManager.shared.preload { [weak self] in
+                    DispatchQueue.main.async {
+                        self?.isModelReady = ModelManager.shared.isReady
+                        self?.captureButton.isEnabled = ModelManager.shared.isReady
+                        self?.statusLabel.text = ModelManager.shared.isReady ? "Ready to scan ✅" : "Model load failed"
                     }
                 }
             }
+        }
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if captureSession.inputs.isEmpty {
+            DispatchQueue.global(qos: .userInitiated).async {
+                self.setupCamera()
+                self.captureSession.startRunning()
+            }
+        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -81,25 +86,18 @@ class ViewController: UIViewController {
         
         do {
             let input = try AVCaptureDeviceInput(device: device)
-            
-            if captureSession.canAddInput(input) {
-                captureSession.addInput(input)
-            }
-            if captureSession.canAddOutput(photoOutput) {
-                captureSession.addOutput(photoOutput)
-            }
+            if captureSession.canAddInput(input) { captureSession.addInput(input) }
+            if captureSession.canAddOutput(photoOutput) { captureSession.addOutput(photoOutput) }
             
             previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
             previewLayer.videoGravity = .resizeAspectFill
             
             DispatchQueue.main.async {
                 self.previewLayer.frame = self.view.bounds
-                self.view.layer.addSublayer(self.previewLayer)
+                self.view.layer.insertSublayer(self.previewLayer, at: 0)
             }
             
-        } catch {
-            print("Camera error")
-        }
+        } catch { print("Camera error") }
     }
     func setupUI() {
         
@@ -401,6 +399,9 @@ class ViewController: UIViewController {
             DispatchQueue.main.async {
                 if let product = ProductCatalog.products[label] {
                     self.statusLabel.text = "Detected: \(product.emoji) \(product.name) (\(confidence)%)"
+                    
+                    self.autoSave(product: product, confidence: confidence)
+
                     self.showProductInfo(product: product, confidence: confidence)
                 } else {
                     self.statusLabel.text = "Detected: \(label.capitalized) (\(confidence)%)"
@@ -450,6 +451,25 @@ class ViewController: UIViewController {
         maskLayer.fillColor = UIColor.black.withAlphaComponent(0.55).cgColor
         
         overlayView.layer.addSublayer(maskLayer)
+    }
+    func autoSave(product: Product, confidence: Int) {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let db = Firestore.firestore()
+        let data: [String: Any] = [
+            "name": product.name,
+            "emoji": product.emoji,
+            "isHalal": product.isHalal,
+            "confidence": confidence,
+            "category": product.category,
+            "calories": product.calories,
+            "date": Date()
+        ]
+        
+        db.collection("scans").document(userId).collection("items")
+            .addDocument(data: data) { error in
+                if error == nil { print("АВТОСОХРАНЕНО!") }
+            }
     }
 }
 

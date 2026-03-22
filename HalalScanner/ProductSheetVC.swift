@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseFirestore
+import FirebaseAuth
 
 class ProductSheetVC: UIViewController {
     let product: Product
@@ -245,8 +247,39 @@ class ProductSheetVC: UIViewController {
 
         ])
         
+    
+        
+        saveButton.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
         
         
+        
+    }
+    @objc func saveTapped() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        
+        let db = Firestore.firestore()
+        
+        let data: [String: Any] = [
+            "name": product.name,
+            "emoji": product.emoji,
+            "isHalal": product.isHalal,
+            "confidence": confidence,
+            "category": product.category,
+            "calories": product.calories,
+            "date": Date()
+        ]
+        
+        db.collection("scans").document(userId).collection("items").addDocument(data: data) { error in
+        if let error = error {
+            print("Ошибка:", error.localizedDescription)
+            }
+            else{
+                print("СОХРАНЕНО!")
+
+            }
+        }
+        
+   
     }
     func makeInfoCell(title: String, value: String, valueColor: UIColor = .black) -> UIView {
         

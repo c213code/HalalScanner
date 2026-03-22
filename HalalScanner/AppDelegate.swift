@@ -15,8 +15,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        print("1 AppDelegate start")
+
         FirebaseApp.configure()
-        ModelManager.shared.preload()
+        
+        print("2 AppDelegate end")
+
+        
         return true
     }
 

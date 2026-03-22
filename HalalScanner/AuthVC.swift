@@ -19,8 +19,11 @@ class AuthVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupView()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
     }
     
     func setupView() {
@@ -37,6 +40,12 @@ class AuthVC: UIViewController {
         iconBackgroundView.backgroundColor =  UIColor(red: 0.11, green: 0.62, blue: 0.46, alpha: 1)
         iconBackgroundView.layer.cornerRadius = 28
         iconBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+        
+        appNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        emailField.translatesAutoresizingMaskIntoConstraints = false
+        passwordFiled.translatesAutoresizingMaskIntoConstraints = false
+        loginButton.translatesAutoresizingMaskIntoConstraints = false
+        registerButton.translatesAutoresizingMaskIntoConstraints = false
         
         
         
@@ -217,10 +226,9 @@ class AuthVC: UIViewController {
             print("Зарегистрирован:", result?.user.email ?? "")
             
             DispatchQueue.main.async {
-                let vc = ViewController()
-                let nav = UINavigationController(rootViewController: vc)
-                nav.modalPresentationStyle = .fullScreen
-                self.present(nav, animated: true)
+                let vc = TabBarVC()
+                vc.modalPresentationStyle = .fullScreen
+                self.present(vc, animated: true)
             }
         }
         
@@ -240,10 +248,9 @@ class AuthVC: UIViewController {
             print("Зашел:", result?.user.email ?? "")
             
             DispatchQueue.main.async {
-                let vc = ViewController()
-                let nav = UINavigationController(rootViewController: vc)
-                nav.modalPresentationStyle = .fullScreen
-                self.present(nav, animated: true)
+                let vc = TabBarVC()
+                vc.modalPresentationStyle = .fullScreen
+                self.present(vc, animated: true)
             }
 
         }
