@@ -26,8 +26,8 @@ class ProductSheetVC: UIViewController {
     
     
     
-
-
+    
+    
     
     init(product: Product, confidence: Int) {
         self.product = product
@@ -42,7 +42,7 @@ class ProductSheetVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.alpha = 0
-
+        
         setupUI()
     }
     
@@ -55,16 +55,16 @@ class ProductSheetVC: UIViewController {
     func setupUI() {
         let infoStack = UIStackView()
         let horizontalInfoStack = UIStackView()
-
+        
         view.backgroundColor = .white
-    
+        
         handle.backgroundColor = UIColor.systemGray3
         handle.layer.cornerRadius = 2
         
         handle.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(handle)
-
+        
         
         NSLayoutConstraint.activate([
             handle.widthAnchor.constraint(equalToConstant: 36),
@@ -81,8 +81,8 @@ class ProductSheetVC: UIViewController {
         view.addSubview(emojiContainer)
         
         NSLayoutConstraint.activate([
-//            emojiContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-//            emojiContainer.topAnchor.constraint(equalTo: view.topAnchor, constant: 23),
+            //            emojiContainer.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
+            //            emojiContainer.topAnchor.constraint(equalTo: view.topAnchor, constant: 23),
             emojiContainer.widthAnchor.constraint(equalToConstant: 90),
             emojiContainer.heightAnchor.constraint(equalToConstant: 90)
             
@@ -90,7 +90,7 @@ class ProductSheetVC: UIViewController {
         ])
         emojiLabel.translatesAutoresizingMaskIntoConstraints = false
         emojiLabel.font = .systemFont(ofSize: 45, weight: .bold)
-
+        
         emojiContainer.addSubview(emojiLabel)
         NSLayoutConstraint.activate([
             emojiLabel.centerXAnchor.constraint(equalTo: emojiContainer.centerXAnchor),
@@ -121,10 +121,10 @@ class ProductSheetVC: UIViewController {
         
         view.addSubview(infoStack)
         
-//        NSLayoutConstraint.activate([
-//            infoStack.leadingAnchor.constraint(equalTo: emojiContainer.trailingAnchor, constant: 30),
-//            infoStack.centerYAnchor.constraint(equalTo: emojiContainer.centerYAnchor)
-//        ])
+        //        NSLayoutConstraint.activate([
+        //            infoStack.leadingAnchor.constraint(equalTo: emojiContainer.trailingAnchor, constant: 30),
+        //            infoStack.centerYAnchor.constraint(equalTo: emojiContainer.centerYAnchor)
+        //        ])
         halalLabel.text = product.isHalal ? "Halal" : "Not Halal"
         halalLabel.font = .systemFont(ofSize: 20, weight: .bold)
         halalLabel.textColor = product.isHalal ? .systemGreen : .systemRed
@@ -135,7 +135,7 @@ class ProductSheetVC: UIViewController {
         
         halalBackground.backgroundColor = product.isHalal ? UIColor.green.withAlphaComponent(0.3) : UIColor.red.withAlphaComponent(0.3)
         halalBackground.setContentCompressionResistancePriority(.required, for: .horizontal)
-
+        
         halalBackground.layer.cornerRadius = 12
         halalBackground.translatesAutoresizingMaskIntoConstraints = false
         halalLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -143,8 +143,8 @@ class ProductSheetVC: UIViewController {
         
         view.addSubview(halalBackground)
         halalBackground.addSubview(halalLabel)
-
-
+        
+        
         NSLayoutConstraint.activate([
             halalLabel.topAnchor.constraint(equalTo: halalBackground.topAnchor, constant: 10),
             halalLabel.bottomAnchor.constraint(equalTo: halalBackground.bottomAnchor, constant: -10),
@@ -162,15 +162,15 @@ class ProductSheetVC: UIViewController {
         row2.axis = .horizontal
         row2.spacing = 8
         row2.distribution = .fillEqually
-
+        
         row1.addArrangedSubview(makeInfoCell(title: "Нақтылығы", value: "\(confidence)%"))
         row1.addArrangedSubview(makeInfoCell(title: "Статус", value: product.isHalal ? "Халал" : "Халал емес", valueColor: product.isHalal ?  UIColor(red: 0.11, green: 0.62, blue: 0.46, alpha: 1) : .systemRed))
-                                
+        
         row2.addArrangedSubview(makeInfoCell(title: "Калориясы", value: "\(product.calories)"))
         row2.addArrangedSubview(makeInfoCell(title: "Катерогия", value: "\(product.category)"))
-                                
-                                    
-     
+        
+        
+        
         
         
         
@@ -183,7 +183,7 @@ class ProductSheetVC: UIViewController {
         horizontalInfoStack.addArrangedSubview(emojiContainer)
         horizontalInfoStack.addArrangedSubview(infoStack)
         horizontalInfoStack.addArrangedSubview(halalBackground)
-
+        
         view.addSubview(horizontalInfoStack)
         
         NSLayoutConstraint.activate([
@@ -207,7 +207,7 @@ class ProductSheetVC: UIViewController {
             grid.topAnchor.constraint(equalTo: horizontalInfoStack.bottomAnchor, constant: 16),
             grid.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             grid.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
-        
+            
         ])
         
         saveButton.setTitle("Сақтау", for: .normal)
@@ -244,10 +244,10 @@ class ProductSheetVC: UIViewController {
             buttonStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             buttonStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             buttonStack.heightAnchor.constraint(equalToConstant: 56)
-
+            
         ])
         
-    
+        
         
         saveButton.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
         
@@ -270,29 +270,29 @@ class ProductSheetVC: UIViewController {
         ]
         
         db.collection("scans").document(userId).collection("items").addDocument(data: data) { error in
-        if let error = error {
-            print("Ошибка:", error.localizedDescription)
+            if let error = error {
+                print("Ошибка:", error.localizedDescription)
             }
             else{
                 print("СОХРАНЕНО!")
-
+                
             }
         }
         
-   
+        
     }
     func makeInfoCell(title: String, value: String, valueColor: UIColor = .black) -> UIView {
         
         let container = UIView()
-           container.backgroundColor = UIColor.systemGray6
-           container.layer.cornerRadius = 12
-           
+        container.backgroundColor = UIColor.systemGray6
+        container.layer.cornerRadius = 12
+        
         
         let titleLabel = UILabel()
         titleLabel.text = title
         titleLabel.font = .systemFont(ofSize: 14, weight: .medium)
         titleLabel.textColor = .systemGray
-
+        
         let valueLabel = UILabel()
         valueLabel.text = value
         valueLabel.font = .systemFont(ofSize: 17, weight: .bold)
@@ -316,7 +316,7 @@ class ProductSheetVC: UIViewController {
             verticalStackPercentStatus.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -12)
             
         ])
-
+        
         return container
         
         
