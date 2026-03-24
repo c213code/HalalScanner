@@ -19,7 +19,7 @@ struct AppUser {
     let role: UserRole
         
     init?(uid: String, data: [String: Any]){
-        guard let email = data["emОЛail"] as? String else { return nil }
+        guard let email = data["email"] as? String else { return nil }
         
         
         self.uid = uid

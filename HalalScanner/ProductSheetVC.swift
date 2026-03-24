@@ -125,15 +125,28 @@ class ProductSheetVC: UIViewController {
         //            infoStack.leadingAnchor.constraint(equalTo: emojiContainer.trailingAnchor, constant: 30),
         //            infoStack.centerYAnchor.constraint(equalTo: emojiContainer.centerYAnchor)
         //        ])
-        halalLabel.text = product.isHalal ? "Halal" : "Not Halal"
+        switch product.halalStatus {
+        case .halal: halalLabel.text = "Halal"
+        case .haram: halalLabel.text = "Not Halal"
+        case .doubtful: halalLabel.text = "Күмәнді"
+        }
         halalLabel.font = .systemFont(ofSize: 20, weight: .bold)
-        halalLabel.textColor = product.isHalal ? .systemGreen : .systemRed
+        
+        switch product.halalStatus {
+        case .halal: halalLabel.textColor = .systemGreen
+        case .haram: halalLabel.textColor = .systemRed
+        case .doubtful: halalLabel.textColor = .systemOrange
+        }
         halalLabel.setContentHuggingPriority(.required, for: .horizontal)
         halalLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         
         
-        halalBackground.backgroundColor = product.isHalal ? UIColor.green.withAlphaComponent(0.3) : UIColor.red.withAlphaComponent(0.3)
+        switch product.halalStatus {
+        case .halal: halalBackground.backgroundColor = UIColor.green.withAlphaComponent(0.3)
+        case .haram: halalBackground.backgroundColor = UIColor.red.withAlphaComponent(0.3)
+        case .doubtful: halalBackground.backgroundColor = UIColor.orange.withAlphaComponent(0.3)
+        }
         halalBackground.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         halalBackground.layer.cornerRadius = 12

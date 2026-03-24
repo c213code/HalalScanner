@@ -14,13 +14,31 @@ class ProfileVC: UIViewController {
     
     let avatarLabel = UILabel()
     let nameLabel = UILabel()
+    let roleBage = UILabel()
         
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
         title = "Профиль"
+        loadUserData()
         setupHeader()
+    }
+    
+    func loadUserData() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        
+        Firestore.firestore().collection("users").document(uid).getDocument{ snapshot, error in
+            guard let data = snapshot?.data() else { return }
+            let name = data["name"] as? String ?? "Пайдаланушы"
+            let role = data["role"] as? String ?? "user"
+                    
+            DispatchQueue.main.async {
+                self.roleBage.text = " \(role) "
+                self.nameLabel.text = name
+            }
+        }
+        
     }
     
     func setupHeader() {
@@ -62,7 +80,7 @@ class ProfileVC: UIViewController {
             avatarLabel.centerYAnchor.constraint(equalTo: avatar.centerYAnchor)
         ])
         
-        nameLabel.text = "Пайдаланушы"
+        
         nameLabel.font = .systemFont(ofSize: 15, weight: .bold)
         nameLabel.textColor  = .white
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -79,11 +97,28 @@ class ProfileVC: UIViewController {
             nameLabel.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 12),
             nameLabel.topAnchor.constraint(equalTo: avatar.topAnchor, constant: 4),
             
-            emailLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor, constant: 12),
+            emailLabel.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 12),
             emailLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4),
             
-                    
+      
+        ])
+        
+    
+        roleBage.backgroundColor = .white.withAlphaComponent(0.2)
+        roleBage.layer.cornerRadius = 8
+        roleBage.textColor = .white
+        roleBage.layer.masksToBounds = true
+        roleBage.text = " user "
+        roleBage.font = .systemFont(ofSize: 13, weight: .regular)
+        roleBage.translatesAutoresizingMaskIntoConstraints = false
+        card.addSubview(roleBage)
+        
+        NSLayoutConstraint.activate([
+            roleBage.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 20),
+            roleBage.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 4)
         ])
     }
+    
+    
     
 }

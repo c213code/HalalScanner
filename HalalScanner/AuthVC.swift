@@ -7,6 +7,8 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
+
 class AuthVC: UIViewController {
     
     let emailField = UITextField()
@@ -214,10 +216,14 @@ class AuthVC: UIViewController {
     
     @objc func registerTapped() {
         
+        
+        
         guard let email = emailField.text, !email.isEmpty,
               let password = passwordFiled.text, !password.isEmpty else {
             return
         }
+
+        
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if let error = error {
                 print("Ошибка:", error.localizedDescription)
@@ -225,10 +231,26 @@ class AuthVC: UIViewController {
             }
             print("Зарегистрирован:", result?.user.email ?? "")
             
-            DispatchQueue.main.async {
-                let vc = TabBarVC()
-                vc.modalPresentationStyle = .fullScreen
-                self.present(vc, animated: true)
+            let db = Firestore.firestore()
+            let uid = result?.user.uid ?? ""
+            
+            let role = email == "admin@halal.com" ? "admin" : "user"
+            
+            db.collection("users").document(uid).setData([
+                "email": email,
+                "name": "Пайдаланушы",
+                "role": role
+            ]) { error in
+                if let error = error {
+                    print("FIRESTORE ERROR:", error.localizedDescription)
+                } else {
+                    print("USER SAVED, role:", role)
+                }
+                DispatchQueue.main.async {
+                    let vc = TabBarVC()
+                    vc.modalPresentationStyle = .fullScreen
+                    self.present(vc, animated: true)
+                }
             }
         }
         

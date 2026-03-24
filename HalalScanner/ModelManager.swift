@@ -5,11 +5,19 @@ import Roboflow
 class ModelManager {
     static let shared = ModelManager()
 
-    var rfModel: RFModel?
+    // Словарь для хранения загруженных моделей
+    var models: [String: RFModel] = [:]
     var isReady = false
     private var isLoading = false
 
+    // Ваш API Key из Roboflow
     private let rf = RoboflowMobile(apiKey: Secrets.roboflowKey)
+
+    // Обновленные ID проектов и их версии из ваших писем
+    private let projectConfigs = [
+        "food": (id: "food-ksjo4", version: 3),
+        "dairy": (id: "-tv4zs", version: 4)
+    ]
 
     func preload(completion: (() -> Void)? = nil) {
         guard !isReady, !isLoading else {
@@ -18,37 +26,34 @@ class ModelManager {
         }
 
         isLoading = true
+        let group = DispatchGroup()
 
-        rf.load(model: "food-ksjo4", modelVersion: 3) { model, error, _, _ in
-            if let error = error {
-                print("MODEL LOAD ERROR:", error.localizedDescription)
-                self.isLoading = false
-                completion?()
-                return
-            }
-
-            self.rfModel = model
-            model?.configure(threshold: 0.4, overlap: 0.3, maxObjects: 3)
-
-            let size = CGSize(width: 50, height: 50)
-            UIGraphicsBeginImageContextWithOptions(size, true, 1.0)
-            UIColor.black.setFill()
-            UIRectFill(CGRect(origin: .zero, size: size))
-            let dummyImage = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
-
-            guard let image = dummyImage else {
-                self.isLoading = false
-                completion?()
-                return
-            }
-
-            model?.detect(image: image) { _, _ in
-                self.isReady = true
-                self.isLoading = false
-                print("MODEL PRELOADED AND WARMED UP")
-                completion?()
+        for (name, config) in projectConfigs {
+            group.enter()
+            
+            rf.load(model: config.id, modelVersion: config.version) { model, error, _, _ in
+                if let error = error {
+                    print("Ошибка загрузки модели \(name):", error.localizedDescription)
+                } else if let model = model {
+                    self.models[name] = model
+                    // Настройка параметров детекции
+                    model.configure(threshold: 0.4, overlap: 0.3, maxObjects: 3)
+                    print("Модель \(name) успешно загружена")
+                }
+                group.leave()
             }
         }
+
+        group.notify(queue: .main) {
+            self.isReady = true
+            self.isLoading = false
+            print("Все модели готовы к работе: \(self.models.keys)")
+            completion?()
+        }
+    }
+    
+    // Метод для получения конкретной модели по имени ("food" или "dairy")
+    func getModel(named name: String) -> RFModel? {
+        return models[name]
     }
 }

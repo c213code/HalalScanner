@@ -8,5 +8,5 @@
 import Foundation
 
 enum Secrets {
-    static let roboflowKey = "rf_1A6rRNZ3GYcTch0fvN85DuZkYKa2"
+    static let roboflowKey = "rf_1A6rRNZ3GYTch0fvN85DuZkYKa2"
 }

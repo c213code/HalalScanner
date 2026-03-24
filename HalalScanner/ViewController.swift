@@ -34,9 +34,7 @@ class ViewController: UIViewController {
     let caloriesLabel = PaddingLabel()
     
     
-    var rfModel: RFModel? {
-        return ModelManager.shared.rfModel
-    }
+   
     
     let overlayView = UIView()
     
@@ -332,85 +330,54 @@ class ViewController: UIViewController {
 
     
 
-    func warmUpModel() {
-        guard let rfModel = rfModel else { return }
-
-        let size = CGSize(width: 50, height: 50)
-        UIGraphicsBeginImageContextWithOptions(size, true, 1.0)
-        UIColor.black.setFill()
-        UIRectFill(CGRect(origin: .zero, size: size))
-        let dummyImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        guard let image = dummyImage else { return }
-
-        rfModel.detect(image: image) { [weak self] _, _ in
-            guard let self = self else { return }
-
-            print("MODEL WARMED UP")
-
-            DispatchQueue.main.async {
-                self.isModelReady = true
-                self.captureButton.isEnabled = true
-                self.statusLabel.text = "Ready to scan ✅"
-            }
-        }
-    }
+   
     
     func detectWithRoboflow(image: UIImage) {
-        guard let rfModel = rfModel else {
+        let foodModel = ModelManager.shared.getModel(named: "food")
+        let dairyModel = ModelManager.shared.getModel(named: "dairy")
+        
+        guard foodModel != nil || dairyModel != nil else {
             statusLabel.text = "Model not loaded"
-            productStack.isHidden = true
             isDetecting = false
             captureButton.isEnabled = true
             return
         }
-
+        
         statusLabel.text = "Searching..."
         productStack.isHidden = true
-
-        rfModel.detect(image: image) { [weak self] predictions, error in
+        
+        var bestLabel: String?
+        var bestConfidence: Int = 0
+        let group = DispatchGroup()
+        
+        for model in [foodModel, dairyModel].compactMap({ $0 }) {
+            group.enter()
+            model.detect(image: image) { predictions, error in
+                if let first = predictions?.first {
+                    let values = first.getValues()
+                    let label = (values["class"] as? String ?? "").lowercased()
+                    let confidence = Int(((values["confidence"] as? NSNumber)?.doubleValue ?? 0) * 100)
+                    if confidence > bestConfidence {
+                        bestConfidence = confidence
+                        bestLabel = label
+                    }
+                }
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
-
-            if error != nil {
-                DispatchQueue.main.async {
-                    self.statusLabel.text = "Detection error"
-                    self.productStack.isHidden = true
-                    self.isDetecting = false
-                    self.captureButton.isEnabled = true
-                }
-                return
+            if let label = bestLabel, let product = ProductCatalog.products[label] {
+                self.statusLabel.text = "Detected: \(product.emoji) \(product.name) (\(bestConfidence)%)"
+                self.autoSave(product: product, confidence: bestConfidence)
+                self.showProductInfo(product: product, confidence: bestConfidence)
+            } else {
+                self.statusLabel.text = "No Food Detected ❌"
+                self.productStack.isHidden = true
             }
-
-            guard let first = predictions?.first else {
-                DispatchQueue.main.async {
-                    self.statusLabel.text = "No Food Detected ❌"
-                    self.productStack.isHidden = true
-                    self.isDetecting = false
-                    self.captureButton.isEnabled = true
-                }
-                return
-            }
-
-            let values = first.getValues()
-            let label = (values["class"] as? String ?? "Unknown").lowercased()
-            let confidence = Int(((values["confidence"] as? NSNumber)?.doubleValue ?? 0) * 100)
-
-            DispatchQueue.main.async {
-                if let product = ProductCatalog.products[label] {
-                    self.statusLabel.text = "Detected: \(product.emoji) \(product.name) (\(confidence)%)"
-                    
-                    self.autoSave(product: product, confidence: confidence)
-
-                    self.showProductInfo(product: product, confidence: confidence)
-                } else {
-                    self.statusLabel.text = "Detected: \(label.capitalized) (\(confidence)%)"
-                    self.productStack.isHidden = true
-                }
-
-                self.isDetecting = false
-                self.captureButton.isEnabled = true
-            }
+            self.isDetecting = false
+            self.captureButton.isEnabled = true
         }
     }
     
