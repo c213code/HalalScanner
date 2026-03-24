@@ -117,6 +117,34 @@ class ProfileVC: UIViewController {
             roleBage.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 20),
             roleBage.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 4)
         ])
+        
+        let logoutButton = UIButton()
+        logoutButton.translatesAutoresizingMaskIntoConstraints = false
+        logoutButton.setTitle("Шығу", for: .normal)
+        logoutButton.setTitleColor(.systemRed, for: .normal)
+        logoutButton.backgroundColor = UIColor.systemRed.withAlphaComponent(0.1)
+        logoutButton.layer.cornerRadius = 12
+        logoutButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
+        logoutButton.addTarget(self, action: #selector(logoutTapped), for: .touchUpInside)
+        
+        view.addSubview(logoutButton)
+        
+        NSLayoutConstraint.activate([
+            logoutButton.topAnchor.constraint(equalTo: card.bottomAnchor, constant: 24),
+            logoutButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            logoutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            logoutButton.heightAnchor.constraint(equalToConstant: 54)
+        ])
+        
+        
+        
+    }
+    @objc func logoutTapped() {
+        try? Auth.auth().signOut()
+        let authVC = AuthVC()
+        let nav = UINavigationController(rootViewController: authVC)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true)
     }
     
     
