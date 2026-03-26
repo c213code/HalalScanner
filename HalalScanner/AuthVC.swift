@@ -21,9 +21,12 @@ class AuthVC: UIViewController {
     
     weak var coordinator: AppCoordinator?
     
+    var viewModel = AuthViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        bindViewModel()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -32,7 +35,7 @@ class AuthVC: UIViewController {
     
     func setupView() {
         view.backgroundColor = .white
-
+       
 
         
         let stack = UIStackView()
@@ -79,6 +82,8 @@ class AuthVC: UIViewController {
         
         emailField.placeholder = "Email"
         emailField.backgroundColor = .systemGray6
+        emailField.autocapitalizationType = .none
+        emailField.keyboardType = .emailAddress
         emailField.layer.cornerRadius = 10
         emailField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 12, height: 0))
         emailField.leftViewMode = .always
@@ -90,6 +95,7 @@ class AuthVC: UIViewController {
         passwordFiled.placeholder = "Password"
         passwordFiled.backgroundColor = .systemGray6
         passwordFiled.layer.cornerRadius = 10
+        passwordFiled.autocapitalizationType = .none
         passwordFiled.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 12, height: 0))
         passwordFiled.leftViewMode = .always
         passwordFiled.isSecureTextEntry = true
@@ -122,6 +128,12 @@ class AuthVC: UIViewController {
             
 
             ])
+        loginButton.alpha = 0.5
+        loginButton.isEnabled = false
+        
+        registerButton.alpha = 0.5
+        registerButton.isEnabled = false
+
         
         registerButton.addTarget(self, action: #selector(registerTapped), for: .touchUpInside)
         loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
@@ -170,10 +182,19 @@ class AuthVC: UIViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
 
+        
+        emailField.addTarget(self, action: #selector(emailChanged), for: .editingChanged)
+        passwordFiled.addTarget(self, action: #selector(passwordChanged), for: .editingChanged)
 
         
         
         
+    }
+    @objc func emailChanged() {
+        viewModel.email = emailField.text ?? ""
+    }
+    @objc func passwordChanged() {
+        viewModel.password = passwordFiled.text ?? ""
     }
     func makeDivider() -> UIView {
         let container = UIView()
@@ -217,68 +238,54 @@ class AuthVC: UIViewController {
     }
     
     @objc func registerTapped() {
-        
-        
-        
-        guard let email = emailField.text, !email.isEmpty,
-              let password = passwordFiled.text, !password.isEmpty else {
-            return
-        }
-
-        
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
-            if let error = error {
-                print("Ошибка:", error.localizedDescription)
-                return
-            }
-            print("Зарегистрирован:", result?.user.email ?? "")
-            
-            let db = Firestore.firestore()
-            let uid = result?.user.uid ?? ""
-            
-            let role = email == "admin@halal.com" ? "admin" : "user"
-            
-            db.collection("users").document(uid).setData([
-                "email": email,
-                "name": "Пайдаланушы",
-                "role": role
-            ]) { error in
-                if let error = error {
-                    print("FIRESTORE ERROR:", error.localizedDescription)
-                } else {
-                    print("USER SAVED, role:", role)
-                }
+        viewModel.register { [weak self] result in
+            switch result {
+            case .success:
                 DispatchQueue.main.async {
-                    self.coordinator?.showMain()
+                    self?.coordinator?.showMain() 
                 }
+            case .failure(let error):
+                print("Ошибка при регистрации:", error.localizedDescription)
             }
         }
-        
     }
     
     @objc func loginTapped() {
-        
-        guard let email = emailField.text, !email.isEmpty,
-              let password = passwordFiled.text, !password.isEmpty else {
-            return
-        }
-        Auth.auth().signIn(withEmail: email, password: password) { result, error in
-            if let error = error {
-                print("Ошибка:", error.localizedDescription)
-                return
+        viewModel.login { [weak self] result in
+            switch result {
+            case .success:
+                DispatchQueue.main.async {
+                    self?.coordinator?.showMain()
+                }
+            case .failure(let error):
+                print("Ошибка при логине:", error.localizedDescription)
             }
-            print("Зашел:", result?.user.email ?? "")
-            
-            DispatchQueue.main.async {
-                self.coordinator?.showMain()
-            }
-
         }
-        
     }
+
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
+    
+    func bindViewModel() {
+        viewModel.isFormValid
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isValid in
+                self?.loginButton.alpha = isValid ? 1.0 : 0.5
+                self?.loginButton.isEnabled = isValid
+            }
+            .store(in: &viewModel.cancellables)
+        
+        viewModel.isFormValid
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isValid in
+                self?.registerButton.alpha = isValid ? 1.0 : 0.5
+                self?.registerButton.isEnabled = isValid
+            }
+            .store(in: &viewModel.cancellables)
+    }
+    
+    
     
 }
 
