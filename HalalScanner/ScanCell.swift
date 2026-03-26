@@ -54,8 +54,9 @@ class ScanCell: UITableViewCell {
             iconLabel.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor)
         ])
         
-        nameLabel.font = .systemFont(ofSize: 23, weight: .bold)
+        nameLabel.font = .systemFont(ofSize: 20, weight: .bold)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        nameLabel.numberOfLines = 0
         
         categoryLabel.font = .systemFont(ofSize: 17, weight: .regular)
         categoryLabel.textColor = .systemGray3
@@ -64,10 +65,11 @@ class ScanCell: UITableViewCell {
         nameStack.axis = .vertical
         nameStack.spacing = 0
         
+        
         nameStack.addArrangedSubview(nameLabel)
         nameStack.addArrangedSubview(categoryLabel)
         
-        halalBadge.font = .systemFont(ofSize: 20, weight: .bold)
+        halalBadge.font = .systemFont(ofSize: 18, weight: .bold)
         halalBadge.textColor = isHalal ? .systemGreen : .systemRed
         
         halalBackground.backgroundColor = isHalal ? UIColor.green.withAlphaComponent(0.3) : UIColor.red.withAlphaComponent(0.3)
@@ -88,7 +90,7 @@ class ScanCell: UITableViewCell {
             halalBadge.trailingAnchor.constraint(equalTo: halalBackground.trailingAnchor, constant: -15)
         ])
         
-        dateLabel.font = .systemFont(ofSize: 17, weight: .regular)
+        dateLabel.font = .systemFont(ofSize: 16, weight: .regular)
         dateLabel.textColor = .systemGray3
         dateLabel.textAlignment = .right
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
