@@ -53,7 +53,7 @@ class HistoryVC: UIViewController {
             ])
         
         tableView.register(ScanCell.self, forCellReuseIdentifier: "ScanCell")
-        tableView.rowHeight = 90
+        tableView.rowHeight = 100
         tableView.separatorStyle = .none
 
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
