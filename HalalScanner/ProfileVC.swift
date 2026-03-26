@@ -77,8 +77,8 @@ class ProfileVC: UIViewController {
         
         NSLayoutConstraint.activate([
             horizontalStackForCounters.topAnchor.constraint(equalTo: profileCard.bottomAnchor, constant: 20),
-            horizontalStackForCounters.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
-            horizontalStackForCounters.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            horizontalStackForCounters.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            horizontalStackForCounters.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             horizontalStackForCounters.heightAnchor.constraint(equalToConstant: 105)
 
         ])
