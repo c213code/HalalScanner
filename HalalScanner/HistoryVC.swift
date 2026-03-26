@@ -53,10 +53,10 @@ class HistoryVC: UIViewController {
             ])
         
         tableView.register(ScanCell.self, forCellReuseIdentifier: "ScanCell")
-        tableView.rowHeight = 100
+        tableView.rowHeight = 90
         tableView.separatorStyle = .none
 
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0)
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
 
         
     }
@@ -101,7 +101,7 @@ extension HistoryVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 8
+        return 2
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {

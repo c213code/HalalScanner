@@ -62,7 +62,7 @@ class ScanCell: UITableViewCell {
         
         
         nameStack.axis = .vertical
-        nameStack.spacing = 2
+        nameStack.spacing = 0
         
         nameStack.addArrangedSubview(nameLabel)
         nameStack.addArrangedSubview(categoryLabel)

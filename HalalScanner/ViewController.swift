@@ -38,6 +38,7 @@ class ViewController: UIViewController {
     
     let overlayView = UIView()
     
+    weak var coordinator: AppCoordinator?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -315,16 +316,7 @@ class ViewController: UIViewController {
         productStack.isHidden = true
     }
     func showProductInfo(product: Product, confidence: Int) {
-        let vc = ProductSheetVC(product:  product, confidence: confidence)
-        vc.modalPresentationStyle = .pageSheet
-        
-        if let sheet = vc.sheetPresentationController {
-            sheet.detents = [.medium()]
-            sheet.prefersGrabberVisible = false
-            sheet.preferredCornerRadius = 32
-        }
-        
-        present(vc, animated: true)
+        coordinator?.showProductSheet(from: self, product: product, confidence: confidence)
         
     }
 

@@ -19,6 +19,8 @@ class AuthVC: UIViewController {
     let iconBackgroundView = UIView()
     let appNameLabel = UILabel()
     
+    weak var coordinator: AppCoordinator?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
@@ -247,9 +249,7 @@ class AuthVC: UIViewController {
                     print("USER SAVED, role:", role)
                 }
                 DispatchQueue.main.async {
-                    let vc = TabBarVC()
-                    vc.modalPresentationStyle = .fullScreen
-                    self.present(vc, animated: true)
+                    self.coordinator?.showMain()
                 }
             }
         }
@@ -270,9 +270,7 @@ class AuthVC: UIViewController {
             print("Зашел:", result?.user.email ?? "")
             
             DispatchQueue.main.async {
-                let vc = TabBarVC()
-                vc.modalPresentationStyle = .fullScreen
-                self.present(vc, animated: true)
+                self.coordinator?.showMain()
             }
 
         }

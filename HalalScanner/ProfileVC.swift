@@ -19,7 +19,7 @@ class ProfileVC: UIViewController {
     let horizontalStackForCounters = UIStackView()
     let logoutButton = UIButton()
 
-    
+    weak var coordinator: AppCoordinator?
     
 
         
@@ -223,11 +223,7 @@ class ProfileVC: UIViewController {
         ])
     }
     @objc func logoutTapped() {
-        try? Auth.auth().signOut()
-        let authVC = AuthVC()
-        let nav = UINavigationController(rootViewController: authVC)
-        nav.modalPresentationStyle = .fullScreen
-        present(nav, animated: true)
+        coordinator?.logout()
     }
     
     

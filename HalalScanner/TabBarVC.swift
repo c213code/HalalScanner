@@ -10,7 +10,13 @@ import UIKit
 class TabBarVC: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupBar()
+        print("TabBarVC coordinator:", coordinator as Any)
+        
+    }
+    weak var coordinator: AppCoordinator? {
+        didSet{
+            setupBar()
+        }
     }
     
     func setupBar() {
@@ -18,13 +24,18 @@ class TabBarVC: UITabBarController {
         let historyVC = UINavigationController(rootViewController: HistoryVC())
         historyVC.tabBarItem = UITabBarItem(title: "Тарих", image: UIImage(systemName: "clock"), tag: 0)
         
-        let scannerVC = UINavigationController(rootViewController: ViewController())
+        
+        let scannerVCRoot = ViewController()
+        scannerVCRoot.coordinator = coordinator
+        let scannerVC = UINavigationController(rootViewController: scannerVCRoot)
         scannerVC.tabBarItem = UITabBarItem(title: "Сканер", image: UIImage(systemName: "camera.viewfinder"), tag: 1)
 
         
 
         
-        let profileVC = UINavigationController(rootViewController: ProfileVC())
+        let profileVCRoot = ProfileVC()
+        profileVCRoot.coordinator = coordinator
+        let profileVC = UINavigationController(rootViewController: profileVCRoot)
         profileVC.tabBarItem = UITabBarItem(title: "Профиль", image: UIImage(systemName: "person.circle"), tag: 2)
         
         
