@@ -40,9 +40,9 @@ class AppCoordinator {
     func logout() {
         try? Auth.auth().signOut()
         if let tabBar = window.rootViewController as? TabBarVC,
-           let nav = tabBar.viewControllers?.[1] as? UINavigationController,
+           let nav = tabBar.viewControllers?[1] as? UINavigationController,
            let scannerVC = nav.viewControllers.first as? ViewController {
-           scannerVC.captureSession.stopRunning()
+            scannerVC.captureSession.stopRunning()
         }
         
         let authVC = AuthVC()
