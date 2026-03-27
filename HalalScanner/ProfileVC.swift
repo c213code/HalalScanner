@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
+import Combine
 
 
 class ProfileVC: UIViewController {
@@ -21,6 +22,8 @@ class ProfileVC: UIViewController {
 
     weak var coordinator: AppCoordinator?
     
+    let viewModel = ProfileViewModel()
+    var cancellables = Set<AnyCancellable>()
 
         
     
@@ -28,34 +31,33 @@ class ProfileVC: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
         title = "Профиль"
-        loadUserData()
+        bindViewModel()
+        viewModel.loadUserData()
         setupHeader()
     }
     
-    func loadUserData() {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        
-        Firestore.firestore().collection("users").document(uid).getDocument{ snapshot, error in
-            guard let data = snapshot?.data() else { return }
-            let name = data["name"] as? String ?? "Пайдаланушы"
-            let role = data["role"] as? String ?? "user"
-                    
-            DispatchQueue.main.async {
-                self.roleBage.text = " \(role) "
-                self.nameLabel.text = name
+    func bindViewModel() {
+        viewModel.$name
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] name in
+                self?.nameLabel.text = name
             }
-        }
+            .store(in: &cancellables)
         
-        Firestore.firestore().collection("scans").document(uid).collection("items").getDocuments { snapshot, _ in
-            let total = snapshot?.documents.count ?? 0
-            let halal = snapshot?.documents.filter {
-                $0.data()["isHalal"] as? Bool == true
-            }.count ?? 0
-            DispatchQueue.main.async {
-                self.setupStatus(total: total, halal: halal, haram: total - halal)
+        viewModel.$role
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] role in
+                self?.roleBage.text = role
             }
-            
-        }
+            .store(in: &cancellables)
+        
+        viewModel.$totalScans
+            .combineLatest(viewModel.$halalScans, viewModel.$haramScans)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] total, halal, haram in
+                self?.setupStatus(total: total, halal: halal, haram: haram)
+            }
+            .store(in: &cancellables)
  
     }
     
