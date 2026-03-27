@@ -8,11 +8,15 @@
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
+import Combine
 
 class HistoryVC: UIViewController {
     let tableView = UITableView(frame: .zero, style: .insetGrouped)
 
-    var scans: [[String: Any]] = []
+//    var scans: [[String: Any]] = []
+    
+    var viewModel = HistoryViewModel()
+    var cancellables = Set<AnyCancellable>()
         
     
     
@@ -20,13 +24,21 @@ class HistoryVC: UIViewController {
         super.viewDidLoad()
         
         setupUI()
+        bindViewModel()
         
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         fetchScans()
     }
-    
+    func bindViewModel() {
+        viewModel.$scans
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.tableView.reloadData()
+        }
+            .store(in: &cancellables)
+    }
     func setupUI() {
         title = "Тарих"
         
@@ -62,30 +74,14 @@ class HistoryVC: UIViewController {
     }
     
     func fetchScans() {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
-        
-        let db = Firestore.firestore()
-        
-        db.collection("scans").document(userId).collection("items").order(by: "date", descending: true).getDocuments { snapshot, error in
-            if let error = error {
-                print("Ошибка:", error.localizedDescription)
-                return
-            }
-            self.scans = snapshot?.documents.map { $0.data() } ?? []
-            print("SCANS COUNT:", self.scans.count)
-            
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
-        
+        viewModel.fetchScans()
     }
 }
 
 extension HistoryVC: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return scans.count
+        return viewModel.scans.count
     }
 
     
@@ -96,7 +92,7 @@ extension HistoryVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ScanCell", for: indexPath) as! ScanCell
-        cell.configure(with: scans[indexPath.section])
+        cell.configure(with: viewModel.scans[indexPath.section])
         return cell
     }
     
