@@ -58,7 +58,7 @@ class ProductSheetVC: UIViewController {
         
         view.backgroundColor = .white
         
-        handle.backgroundColor = UIColor.systemGray3
+        handle.backgroundColor = UIColor.appBackground
         handle.layer.cornerRadius = 2
         
         handle.translatesAutoresizingMaskIntoConstraints = false
@@ -74,7 +74,7 @@ class ProductSheetVC: UIViewController {
         ])
         
         emojiLabel.text = product.emoji
-        emojiContainer.backgroundColor = UIColor(red: 0.88, green: 0.95, blue: 0.87, alpha: 1)
+        emojiContainer.backgroundColor = UIColor.appCardGreen
         emojiContainer.layer.cornerRadius = 36
         emojiContainer.translatesAutoresizingMaskIntoConstraints = false
         
@@ -177,7 +177,7 @@ class ProductSheetVC: UIViewController {
         row2.distribution = .fillEqually
         
         row1.addArrangedSubview(makeInfoCell(title: "Нақтылығы", value: "\(confidence)%"))
-        row1.addArrangedSubview(makeInfoCell(title: "Статус", value: product.isHalal ? "Халал" : "Халал емес", valueColor: product.isHalal ?  UIColor(red: 0.11, green: 0.62, blue: 0.46, alpha: 1) : .systemRed))
+        row1.addArrangedSubview(makeInfoCell(title: "Статус", value: product.isHalal ? "Халал" : "Халал емес", valueColor: product.isHalal ?  UIColor.appGreen : .systemRed))
         
         row2.addArrangedSubview(makeInfoCell(title: "Калориясы", value: "\(product.calories)"))
         row2.addArrangedSubview(makeInfoCell(title: "Катерогия", value: "\(product.category)"))
@@ -226,14 +226,14 @@ class ProductSheetVC: UIViewController {
         saveButton.setTitle("Сақтау", for: .normal)
         saveButton.setTitleColor(.white, for: .normal)
         saveButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
-        saveButton.backgroundColor = UIColor(red: 0.11, green: 0.62, blue: 0.46, alpha: 1)
+        saveButton.backgroundColor = UIColor.appGreen
         saveButton.layer.cornerRadius = 8
         
         
         retryButton.backgroundColor = .clear
-        retryButton.setTitleColor(UIColor(red: 205/255, green: 35/255, blue: 35/255, alpha: 1), for: .normal)
+        retryButton.setTitleColor(UIColor.appRed, for: .normal)
         retryButton.layer.borderWidth = 1.5
-        retryButton.layer.borderColor = UIColor(red: 205/255, green: 35/255, blue: 35/255, alpha: 1).cgColor
+        retryButton.layer.borderColor = UIColor.appRed.cgColor
         retryButton.setTitle("Қайтадан", for: .normal)
         retryButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
         retryButton.layer.cornerRadius = 8
@@ -297,7 +297,7 @@ class ProductSheetVC: UIViewController {
     func makeInfoCell(title: String, value: String, valueColor: UIColor = .black) -> UIView {
         
         let container = UIView()
-        container.backgroundColor = UIColor.systemGray6
+        container.backgroundColor = UIColor.appBackground
         container.layer.cornerRadius = 12
         
         

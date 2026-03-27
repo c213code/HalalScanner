@@ -42,7 +42,7 @@ class TabBarVC: UITabBarController {
         
         viewControllers = [historyVC, scannerVC, profileVC]
 
-        tabBar.tintColor = UIColor(red: 0.11, green: 0.62, blue: 0.46, alpha: 1)
+        tabBar.tintColor = UIColor.appGreen
 
         tabBar.unselectedItemTintColor = .systemGray3
         

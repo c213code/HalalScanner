@@ -125,7 +125,7 @@ class ProfileVC: UIViewController {
     
     func setupHeader() {
         
-        profileCard.backgroundColor = UIColor(red: 0.11, green: 0.62, blue: 0.46, alpha: 1)
+        profileCard.backgroundColor = UIColor.appGreen
         profileCard.layer.cornerRadius = 16
         profileCard.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileCard)

@@ -44,7 +44,7 @@ class AuthVC: UIViewController {
         iconLabel.translatesAutoresizingMaskIntoConstraints = false
         
         
-        iconBackgroundView.backgroundColor =  UIColor(red: 0.11, green: 0.62, blue: 0.46, alpha: 1)
+        iconBackgroundView.backgroundColor =  UIColor.appGreen
         iconBackgroundView.layer.cornerRadius = 28
         iconBackgroundView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -120,9 +120,9 @@ class AuthVC: UIViewController {
         registerButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
         registerButton.backgroundColor = .white
         registerButton.layer.borderWidth = 1.5
-        registerButton.layer.borderColor =  UIColor(red: 0.11, green: 0.62, blue: 0.46, alpha: 1).cgColor
+        registerButton.layer.borderColor =  UIColor.appGreen.cgColor
         registerButton.layer.cornerRadius = 10
-        registerButton.setTitleColor(UIColor(red: 0.11, green: 0.62, blue: 0.46, alpha: 1), for: .normal)
+        registerButton.setTitleColor(UIColor.appGreen, for: .normal)
         NSLayoutConstraint.activate([
             registerButton.heightAnchor.constraint(equalToConstant: 50)
             

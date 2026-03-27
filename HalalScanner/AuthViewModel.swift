@@ -66,7 +66,7 @@ class AuthViewModel: ObservableObject {
             } else {
                 completion(.success(()))
             }
-        }
+            }
     }
     
     

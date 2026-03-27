@@ -38,7 +38,7 @@ class ScanCell: UITableViewCell {
         contentView.layer.cornerRadius = 18
         contentView.layer.masksToBounds = true
         
-        iconContainer.backgroundColor = UIColor(red: 0.88, green: 0.95, blue: 0.87, alpha: 1)
+        iconContainer.backgroundColor = UIColor.appCardGreen
         iconContainer.layer.cornerRadius = 14
         iconContainer.translatesAutoresizingMaskIntoConstraints = false
         
@@ -149,7 +149,7 @@ class ScanCell: UITableViewCell {
            halalBadge.text = isHalal ? "Халал" : "Халал емес"
            halalBadge.textColor = isHalal ? .systemGreen : .systemRed
            halalBackground.backgroundColor = isHalal ? UIColor.green.withAlphaComponent(0.3) : UIColor.red.withAlphaComponent(0.3)
-           iconContainer.backgroundColor = isHalal ? UIColor(red: 0.88, green: 0.95, blue: 0.87, alpha: 1) : UIColor(red: 0.99, green: 0.92, blue: 0.92, alpha: 1)
+        iconContainer.backgroundColor = isHalal ? UIColor.appCardGreen : UIColor.appCardRed
         
         if let timestamp = scan["date"] as? Timestamp {
             let date = timestamp.dateValue()
