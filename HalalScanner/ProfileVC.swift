@@ -62,6 +62,9 @@ class ProfileVC: UIViewController {
     }
     
     func setupStatus(total: Int, halal: Int, haram: Int){
+        horizontalStackForCounters.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+        
         let totalCard =  makeStatCard(value: "\(total)", label: "Барлығы", valueColor: .gray, labelColor: .systemGray3 , bgColor: .white)
         let halalCard = makeStatCard(value: "\(halal)", label: "Халал", valueColor: .systemGreen, labelColor: UIColor.systemGreen.withAlphaComponent(0.7), bgColor: UIColor.green.withAlphaComponent(0.1))
         let haramCard = makeStatCard(value: "\(haram)", label: "Халал емес", valueColor: .systemRed, labelColor: UIColor.systemRed.withAlphaComponent(0.7), bgColor: UIColor.red.withAlphaComponent(0.1))
@@ -75,19 +78,13 @@ class ProfileVC: UIViewController {
         
         horizontalStackForCounters.translatesAutoresizingMaskIntoConstraints = false
         
-        view.addSubview(horizontalStackForCounters)
         
-        NSLayoutConstraint.activate([
-            horizontalStackForCounters.topAnchor.constraint(equalTo: profileCard.bottomAnchor, constant: 20),
-            horizontalStackForCounters.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            horizontalStackForCounters.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            horizontalStackForCounters.heightAnchor.constraint(equalToConstant: 105)
-
-        ])
+        
+        
         self.setupLogoutButton()
 
     }
-    func makeStatCard(value: String, label: String, valueColor: UIColor, labelColor: UIColor, bgColor: UIColor, ) -> UIView {
+    func makeStatCard(value: String, label: String, valueColor: UIColor, labelColor: UIColor, bgColor: UIColor) -> UIView {
         let card = UIView()
         card.layer.borderWidth = 1.5
         card.backgroundColor = bgColor
@@ -144,6 +141,7 @@ class ProfileVC: UIViewController {
         avatar.translatesAutoresizingMaskIntoConstraints = false
         profileCard.addSubview(avatar)
         
+        view.addSubview(horizontalStackForCounters)
         
         NSLayoutConstraint.activate([
             avatar.centerYAnchor.constraint(equalTo: profileCard.centerYAnchor),
@@ -202,6 +200,14 @@ class ProfileVC: UIViewController {
         NSLayoutConstraint.activate([
             roleBage.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 20),
             roleBage.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 6)
+        ])
+        
+        NSLayoutConstraint.activate([
+            horizontalStackForCounters.topAnchor.constraint(equalTo: profileCard.bottomAnchor, constant: 20),
+            horizontalStackForCounters.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            horizontalStackForCounters.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            horizontalStackForCounters.heightAnchor.constraint(equalToConstant: 105)
+
         ])
         
         logoutButton.translatesAutoresizingMaskIntoConstraints = false
