@@ -30,17 +30,21 @@ class TabBarVC: UITabBarController {
         let scannerVC = UINavigationController(rootViewController: scannerVCRoot)
         scannerVC.tabBarItem = UITabBarItem(title: "Сканер", image: UIImage(systemName: "camera.viewfinder"), tag: 1)
 
-        
+        let favoritesVC = UINavigationController(rootViewController: FavoritesVC())
+        favoritesVC.tabBarItem = UITabBarItem(title: "Сақталған", image: UIImage(systemName: "star.circle"), tag: 2)
 
         
         let profileVCRoot = ProfileVC()
         profileVCRoot.coordinator = coordinator
         let profileVC = UINavigationController(rootViewController: profileVCRoot)
-        profileVC.tabBarItem = UITabBarItem(title: "Профиль", image: UIImage(systemName: "person.circle"), tag: 2)
+        profileVC.tabBarItem = UITabBarItem(title: "Профиль", image: UIImage(systemName: "person.circle"), tag: 3)
+        
+        
+      
         
         
         
-        viewControllers = [historyVC, scannerVC, profileVC]
+        viewControllers = [historyVC, scannerVC, favoritesVC, profileVC]
 
         tabBar.tintColor = UIColor.appGreen
 
