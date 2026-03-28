@@ -20,6 +20,7 @@ struct Product {
     let halalStatus: HalalStatus
     let category: String
     let calories: Int
+    let haramItem: String? = nil
     
     var isHalal: Bool {
         return halalStatus == .halal
