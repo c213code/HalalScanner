@@ -26,10 +26,12 @@ class FavoritesVC: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         setupCollectionView()
         bindViewModel()
-        fetchFavorites()
         
     }
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchFavorites()
+    }
     func setupCollectionView() {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 12
