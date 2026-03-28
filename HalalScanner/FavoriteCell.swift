@@ -49,11 +49,16 @@ class FavoriteCell: UICollectionViewCell {
             iconContainer.heightAnchor.constraint(equalToConstant: 60)
         ])
         
-        nameLabel.font = .systemFont(ofSize: 20, weight: .bold)
+        nameLabel.font = .systemFont(ofSize: 19, weight: .bold)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.numberOfLines = 0
+        nameLabel.numberOfLines = 2
+        nameLabel.textAlignment = .center
+        nameLabel.lineBreakMode = .byCharWrapping
+        nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        nameLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         
-        halalBadge.font = .systemFont(ofSize: 17, weight: .bold)
+        
+        halalBadge.font = .systemFont(ofSize: 14, weight: .bold)
         halalBackground.layer.cornerRadius = 10
         halalBadge.translatesAutoresizingMaskIntoConstraints = false
         halalBackground.translatesAutoresizingMaskIntoConstraints = false
@@ -69,8 +74,9 @@ class FavoriteCell: UICollectionViewCell {
         
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.spacing = 6
+        stack.spacing = 10
         stack.alignment = .center
+        
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.addArrangedSubview(iconContainer)
         stack.addArrangedSubview(nameLabel)
