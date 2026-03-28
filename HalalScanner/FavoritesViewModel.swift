@@ -24,7 +24,11 @@ class FavoritesViewModel : ObservableObject {
                 }
                 print("FAVORITES COUNT:", snapshot?.documents.count ?? 0)
                 self?.isLoading = false
-                self?.favorites = snapshot?.documents.map { $0.data() } ?? []
+                self?.favorites = snapshot?.documents.map { doc in
+                    var data = doc.data()
+                    data["documentId"] = doc.documentID
+                    return data
+                } ?? []
             }
     }
 }
