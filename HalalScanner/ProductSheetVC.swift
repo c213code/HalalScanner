@@ -282,7 +282,7 @@ class ProductSheetVC: UIViewController {
             "date": Date()
         ]
         
-        db.collection("scans").document(userId).collection("items").addDocument(data: data) { error in
+        db.collection("favorites").document(userId).collection("items").addDocument(data: data) { error in
             if let error = error {
                 print("Ошибка:", error.localizedDescription)
             }
