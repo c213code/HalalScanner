@@ -76,6 +76,17 @@ class HistoryVC: UIViewController {
     func fetchScans() {
         viewModel.fetchScans()
     }
+    func saveToFavorites(scan: [String: Any]) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        var data = scan
+        data["savedAt"] = Date()
+        Firestore.firestore().collection("favorites").document(uid).collection("items")
+            .addDocument(data: data) { error in
+                if error == nil {
+                    print("ДОБАВЛЕНО В ИЗБРАННОЕ")
+                }
+            }
+    }
 }
 
 extension HistoryVC: UITableViewDelegate, UITableViewDataSource {
@@ -102,5 +113,17 @@ extension HistoryVC: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return UIView()
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let saveAction = UIContextualAction(style: .normal, title: "Сақтау") {_, _, completion in
+            let scan = self.viewModel.scans[indexPath.section]
+            self.saveToFavorites(scan: scan)
+            completion(true)
+
+        }
+        saveAction.backgroundColor = UIColor.systemOrange
+        return UISwipeActionsConfiguration(actions: [saveAction])
     }
 }
