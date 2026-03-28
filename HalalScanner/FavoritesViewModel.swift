@@ -17,11 +17,14 @@ class FavoritesViewModel : ObservableObject {
             .collection("favorites")
             .document(userId)
             .collection("items")
-            .order(by: "date", descending: true)
+            .order(by: "savedAt", descending: true)
             .getDocuments { [weak self] snapshot, error in
+                if let error = error {
+                    print("FAVORITES ERROR:", error.localizedDescription)
+                }
+                print("FAVORITES COUNT:", snapshot?.documents.count ?? 0)
                 self?.isLoading = false
                 self?.favorites = snapshot?.documents.map { $0.data() } ?? []
             }
-        
     }
 }
