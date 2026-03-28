@@ -279,7 +279,8 @@ class ProductSheetVC: UIViewController {
             "confidence": confidence,
             "category": product.category,
             "calories": product.calories,
-            "date": Date()
+            "date": Date(),
+            "savedAt": Date()
         ]
         
         db.collection("favorites").document(userId).collection("items").addDocument(data: data) { error in
