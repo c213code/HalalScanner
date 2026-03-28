@@ -74,6 +74,17 @@ class FavoritesVC: UIViewController {
         viewModel.fetchScans()
     }
     
+    func deleteFromFavorites(at indexPath: IndexPath) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let item = favorites[indexPath.item]
+        guard let docId = item["documentId"] as? String else { return }
+        
+        Firestore.firestore().collection("favorites").document(uid).collection("items").document(docId).delete()
+        
+        favorites.remove(at: indexPath.item)
+        collectionView.reloadData()
+    }
+    
 }
 
 extension FavoritesVC: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -84,6 +95,15 @@ extension FavoritesVC: UICollectionViewDelegate, UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FavoriteCell", for: indexPath) as! FavoriteCell
         cell.configure(with: favorites[indexPath.item])
         return cell
+        
+    }
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let delete = UIAction(title: "Жою", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+                self.deleteFromFavorites(at: indexPath)
+            }
+            return UIMenu(title: "", children: [delete])
+        }
         
     }
 }
