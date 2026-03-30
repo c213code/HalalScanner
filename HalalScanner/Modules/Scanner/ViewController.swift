@@ -71,6 +71,9 @@ class ViewController: UIViewController {
             .sink { [weak self] isDetecting in
                 guard let self = self else { return }
                 self.scannerView.captureButton.isEnabled = self.viewModel.isReady && !isDetecting
+                if !isDetecting {
+                    self.scannerView.stopStatusPulse()  
+                }
             }
             .store(in: &cancellables)
         viewModel.$detectedProduct
@@ -108,13 +111,14 @@ class ViewController: UIViewController {
 
     @objc func capturePhoto() {
         guard viewModel.isReady else {
-            scannerView.statusLabel.text = "Please wait..."
+            scannerView.statusLabel.text = "Күте тұрыңыз..."
               return
           }
 
         guard !viewModel.isDetecting else { return }
 
         scannerView.captureButton.isEnabled = false
+        scannerView.animateCapture()
 
           let settings = AVCapturePhotoSettings()
           photoOutput.capturePhoto(with: settings, delegate: self)

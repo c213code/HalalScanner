@@ -17,6 +17,8 @@ class ScannerView : UIView {
     let halalLabel = PaddingLabel()
     let caloriesLabel = PaddingLabel()
     let overlayView = UIView()
+    
+    let flashView = UIView()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -82,6 +84,20 @@ class ScannerView : UIView {
             statusLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
             statusLabel.topAnchor.constraint(equalTo: scanFrame.topAnchor, constant: -100)
         ])
+        
+        flashView.backgroundColor = .white
+        flashView.alpha = 0
+        flashView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(flashView)
+        bringSubviewToFront(flashView)
+        NSLayoutConstraint.activate([
+            flashView.topAnchor.constraint(equalTo: topAnchor),
+            flashView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            flashView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            flashView.trailingAnchor.constraint(equalTo: trailingAnchor)
+        ])
+
+        
         
         setupScannerCorners()
         setupProductInfo()
@@ -260,6 +276,34 @@ class ScannerView : UIView {
             
             overlayView.layer.addSublayer(maskLayer)
         }
+    
+    func animateCapture() {
+        flashView.alpha = 1
+        UIView.animate(withDuration: 0.35, delay: 0, options: .curveEaseOut) {
+            self.flashView.alpha = 0
+        }
+        UIView.animate(withDuration: 0.1, animations: {
+            self.captureButton.transform = CGAffineTransform(scaleX: 0.88, y: 0.88)
+        }) { _ in
+            UIView.animate(withDuration: 0.15) {
+                self.captureButton.transform = .identity
+            }
+        }
+        statusLabel.text = "Анализдалуда... ⏳"
+        statusLabel.backgroundColor = UIColor.appGreen.withAlphaComponent(0.85)
+        UIView.animate(withDuration: 0.6, delay: 0, options: [.repeat, .autoreverse, .allowUserInteraction]) {
+            self.statusLabel.alpha = 0.4
+        }
+    }
+    
+    func stopStatusPulse() {
+        statusLabel.layer.removeAllAnimations()
+        UIView.animate(withDuration: 0.2) {
+            self.statusLabel.alpha = 1
+        }
+        statusLabel.backgroundColor = UIColor.gray.withAlphaComponent(0.7)
+
+    }
     
     
 }
