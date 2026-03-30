@@ -11,20 +11,24 @@ import FirebaseAuth
 import Combine
 
 class HistoryVC: UIViewController {
-    let tableView = UITableView(frame: .zero, style: .insetGrouped)
-
+    let historyView = HistoryView()
 //    var scans: [[String: Any]] = []
     
     var viewModel = HistoryViewModel()
     var cancellables = Set<AnyCancellable>()
         
-    
+    override func loadView() {
+        view = historyView
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setupUI()
+        title = "Тарих"
         bindViewModel()
+        navigationItem.titleView = nil
+        navigationController?.navigationBar.prefersLargeTitles = true
+        historyView.tableView.delegate = self
+        historyView.tableView.dataSource = self
         
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -35,43 +39,11 @@ class HistoryVC: UIViewController {
         viewModel.$scans
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.tableView.reloadData()
+                self?.historyView.tableView.reloadData()
         }
             .store(in: &cancellables)
     }
-    func setupUI() {
-        title = "Тарих"
-        
-        let subtitleLabel = UILabel()
-        subtitleLabel.text = "Барлық сканерлеулер"
-        subtitleLabel.font = .systemFont(ofSize: 13, weight: .regular)
-        subtitleLabel.textColor = .systemGray
-        navigationItem.titleView = nil
-        navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .systemGray6
-        
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = .clear
-        tableView.delegate = self
-        tableView.dataSource = self
-        
-        view.addSubview(tableView)
-        
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-            ])
-        
-        tableView.register(ScanCell.self, forCellReuseIdentifier: "ScanCell")
-        tableView.rowHeight = 100
-        tableView.separatorStyle = .none
-
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
-
-        
-    }
+  
     
     func fetchScans() {
         viewModel.fetchScans()

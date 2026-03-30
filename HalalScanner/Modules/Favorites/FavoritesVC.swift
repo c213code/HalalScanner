@@ -11,12 +11,13 @@ import FirebaseAuth
 import Combine
 
 class FavoritesVC: UIViewController {
-    var collectionView: UICollectionView!
+    
     var favorites: [[String: Any]] = []
     
     var viewModel = FavoritesViewModel()
     
     var cancellables = Set<AnyCancellable>()
+    let favoritesView = FavoritesView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +25,9 @@ class FavoritesVC: UIViewController {
         title = "Сақталған"
         navigationItem.titleView = nil
         navigationController?.navigationBar.prefersLargeTitles = true
-        setupCollectionView()
+        
+        favoritesView.collectionView.delegate = self
+        favoritesView.collectionView.dataSource = self
         bindViewModel()
         
     }
@@ -32,40 +35,17 @@ class FavoritesVC: UIViewController {
         super.viewWillAppear(animated)
         fetchFavorites()
     }
-    func setupCollectionView() {
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 12
-        layout.minimumInteritemSpacing = 12
-        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        
-        let width = (UIScreen.main.bounds.width - 44) / 2
-        layout.itemSize = CGSize(width: width, height: width)
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        
-        collectionView.backgroundColor = .systemGray6
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        
-        view.addSubview(collectionView)
-        
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-        
-        collectionView.register(FavoriteCell.self, forCellWithReuseIdentifier: "FavoriteCell")
-        
-        
+    override func loadView() {
+        view = favoritesView
     }
+    
+    
     func bindViewModel() {
         viewModel.$favorites
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
                 self?.favorites = items
-                self?.collectionView.reloadData()
+                self?.favoritesView.collectionView.reloadData()
             }
             .store(in: &cancellables)
     }
@@ -82,7 +62,7 @@ class FavoritesVC: UIViewController {
         Firestore.firestore().collection("favorites").document(uid).collection("items").document(docId).delete()
         
         favorites.remove(at: indexPath.item)
-        collectionView.reloadData()
+        favoritesView.collectionView.reloadData()
     }
     
 }
