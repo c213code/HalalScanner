@@ -10,46 +10,31 @@ import AVFoundation
 //import Vision
 //import CoreML
 import Roboflow
-import FirebaseFirestore
-import FirebaseAuth
+import Combine
 
 class ViewController: UIViewController {
 
     let captureSession = AVCaptureSession()
     var previewLayer: AVCaptureVideoPreviewLayer!
-  
     let photoOutput = AVCapturePhotoOutput()
 
-    var isModelReady = false
-    var isDetecting = false
     
     weak var coordinator: AppCoordinator?
     
     let scannerView = ScannerView()
+    let viewModel = ScannerViewModel()
+    var cancellables = Set<AnyCancellable>()
     
-    
+    override func loadView(){
+        view = scannerView
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         scannerView.captureButton.addTarget(self, action: #selector(capturePhoto), for: .touchUpInside)
-
         scannerView.captureButton.isEnabled = false
-        scannerView.statusLabel.text = "Preparing scanner..."
-
-        if ModelManager.shared.isReady {
-            isModelReady = true
-            scannerView.captureButton.isEnabled = true
-            scannerView.statusLabel.text = "Ready to scan ✅"
-        } else {
-            DispatchQueue.global(qos: .userInitiated).async {
-                ModelManager.shared.preload { [weak self] in
-                    DispatchQueue.main.async {
-                        self?.isModelReady = ModelManager.shared.isReady
-                        self?.scannerView.captureButton.isEnabled = ModelManager.shared.isReady
-                        self?.scannerView.statusLabel.text = ModelManager.shared.isReady ? "Ready to scan ✅" : "Model load failed"
-                    }
-                }
-            }
-        }
+        viewModel.preloadIfNeeded()
+        bindViewModel()
     }
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -61,14 +46,44 @@ class ViewController: UIViewController {
         }
     }
     
-    override func loadView(){
-        view = scannerView
-    }
-    
+ 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         scannerView.applyOverlayMask()
     }
+    
+    func bindViewModel() {
+        viewModel.$statusText
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] text in
+                self?.scannerView.statusLabel.text = text
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$isReady
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isReady in
+                self?.scannerView.captureButton.isEnabled = isReady
+            }
+            .store(in: &cancellables)
+        viewModel.$isDetecting
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isDetecting in
+                guard let self = self else { return }
+                self.scannerView.captureButton.isEnabled = self.viewModel.isReady && !isDetecting
+            }
+            .store(in: &cancellables)
+        viewModel.$detectedProduct
+               .receive(on: DispatchQueue.main)
+               .compactMap { $0 }
+               .sink { [weak self] product, confidence in
+                   guard let self = self else { return }
+                   self.coordinator?.showProductSheet(from: self, product: product, confidence: confidence)
+                   self.scannerView.captureButton.isEnabled = true
+               }
+               .store(in: &cancellables)
+    }
+    
     
     func setupCamera() {
         captureSession.sessionPreset = .photo
@@ -92,14 +107,13 @@ class ViewController: UIViewController {
     }
 
     @objc func capturePhoto() {
-        guard isModelReady else {
+        guard viewModel.isReady else {
             scannerView.statusLabel.text = "Please wait..."
               return
           }
 
-          guard !isDetecting else { return }
+        guard !viewModel.isDetecting else { return }
 
-          isDetecting = true
         scannerView.captureButton.isEnabled = false
 
           let settings = AVCapturePhotoSettings()
@@ -114,100 +128,18 @@ class ViewController: UIViewController {
         coordinator?.showProductSheet(from: self, product: product, confidence: confidence)
         
     }
-
-
-    
-    func detectWithRoboflow(image: UIImage) {
-        let foodModel = ModelManager.shared.getModel(named: "food")
-        let dairyModel = ModelManager.shared.getModel(named: "dairy")
-        
-        guard foodModel != nil || dairyModel != nil else {
-            scannerView.statusLabel.text = "Model not loaded"
-            isDetecting = false
-            scannerView.captureButton.isEnabled = true
-            return
-        }
-        
-        scannerView.statusLabel.text = "Searching..."
-        scannerView.productStack.isHidden = true
-        
-        var bestLabel: String?
-        var bestConfidence: Int = 0
-        let group = DispatchGroup()
-        
-        for model in [foodModel, dairyModel].compactMap({ $0 }) {
-            group.enter()
-            model.detect(image: image) { predictions, error in
-                if let first = predictions?.first {
-                    let values = first.getValues()
-                    let label = (values["class"] as? String ?? "").lowercased()
-                    let confidence = Int(((values["confidence"] as? NSNumber)?.doubleValue ?? 0) * 100)
-                    if confidence > bestConfidence {
-                        bestConfidence = confidence
-                        bestLabel = label
-                    }
-                }
-                group.leave()
-            }
-        }
-        
-        group.notify(queue: .main) { [weak self] in
-            guard let self = self else { return }
-            if let label = bestLabel, let product = ProductCatalog.products[label] {
-                self.scannerView.statusLabel.text = "Detected: \(product.emoji) \(product.name) (\(bestConfidence)%)"
-                self.autoSave(product: product, confidence: bestConfidence)
-                self.showProductInfo(product: product, confidence: bestConfidence)
-            } else {
-                self.scannerView.statusLabel.text = "No Food Detected ❌"
-                self.scannerView.productStack.isHidden = true
-            }
-            self.isDetecting = false
-            self.scannerView.captureButton.isEnabled = true
-        }
-    }
-    
-  
-    
-    func autoSave(product: Product, confidence: Int) {
-        guard let userId = Auth.auth().currentUser?.uid else { return }
-        
-        let db = Firestore.firestore()
-        let data: [String: Any] = [
-            "name": product.name,
-            "emoji": product.emoji,
-            "isHalal": product.halalStatus == .halal,
-            "confidence": confidence,
-            "category": product.category,
-            "calories": product.calories,
-            "date": Date()
-        ]
-        
-        db.collection("scans").document(userId).collection("items")
-            .addDocument(data: data) { error in
-                if error == nil { print("АВТОСОХРАНЕНО!") }
-            }
-    }
 }
-
-
-
-
 extension ViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?){
-        
-        
         print("PHOTO CAPTURED")
         guard let data = photo.fileDataRepresentation() else {
             print("NO PHOTO DATA")
-
-            return }
-        
+            return
+        }
         guard let image = UIImage(data: data) else {
             print("CANNOT CREATE UIIMAGE")
-
-            return }
-        
-        detectWithRoboflow(image: image)
-
+            return
+        }
+        viewModel.detect(image: image)
     }
 }
