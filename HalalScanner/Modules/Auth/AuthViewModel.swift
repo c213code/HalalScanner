@@ -16,6 +16,7 @@ class AuthViewModel: ObservableObject {
     @Published var password = ""
     @Published var isLoading = false
     @Published var errorMessage = ""
+
     
     var cancellables = Set<AnyCancellable>()
     

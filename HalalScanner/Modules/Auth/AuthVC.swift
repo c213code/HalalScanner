@@ -22,7 +22,7 @@ class AuthVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        authView.setupView()
+        
         setupActions()
         bindViewModel()
     }
