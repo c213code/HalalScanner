@@ -5,15 +5,15 @@ import Roboflow
 class ModelManager {
     static let shared = ModelManager()
 
-    // Словарь для хранения загруженных моделей
+    
     var models: [String: RFModel] = [:]
     var isReady = false
     private var isLoading = false
 
-    // Ваш API Key из Roboflow
+    
     private let rf = RoboflowMobile(apiKey: Secrets.roboflowKey)
 
-    // Обновленные ID проектов и их версии из ваших писем
+    
     private let projectConfigs = [
         "food": (id: "food-ksjo4", version: 3),
         "dairy": (id: "-tv4zs", version: 4)
@@ -36,7 +36,7 @@ class ModelManager {
                     print("Ошибка загрузки модели \(name):", error.localizedDescription)
                 } else if let model = model {
                     self.models[name] = model
-                    // Настройка параметров детекции
+                    
                     model.configure(threshold: 0.4, overlap: 0.3, maxObjects: 3)
                     print("Модель \(name) успешно загружена")
                 }
@@ -52,7 +52,7 @@ class ModelManager {
         }
     }
     
-    // Метод для получения конкретной модели по имени ("food" или "dairy")
+    
     func getModel(named name: String) -> RFModel? {
         return models[name]
     }
