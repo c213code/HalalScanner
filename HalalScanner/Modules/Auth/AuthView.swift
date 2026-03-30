@@ -18,7 +18,7 @@ class AuthView: UIView {
     let iconLabel = UILabel()
     let iconBackgroundView = UIView()
     let appNameLabel = UILabel()
-    
+    let errorLabel = UILabel()
     
     
     
@@ -94,6 +94,13 @@ class AuthView: UIView {
         passwordFiled.translatesAutoresizingMaskIntoConstraints = false
         passwordFiled.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
+        errorLabel.textColor = UIColor.appRed
+        errorLabel.font = .systemFont(ofSize: 13, weight: .medium)
+        errorLabel.textAlignment = .center
+        errorLabel.numberOfLines = 0
+        errorLabel.isHidden = true
+        errorLabel.translatesAutoresizingMaskIntoConstraints = true
+        
         loginButton.setTitle("Кіру", for: .normal)
         loginButton.setTitleColor(.white, for: .normal)
         loginButton.titleLabel?.font = .systemFont(ofSize: 18, weight: .bold)
@@ -130,6 +137,7 @@ class AuthView: UIView {
         stack.setCustomSpacing(24, after: subtitleLabel)
         stack.addArrangedSubview(emailField)
         stack.addArrangedSubview(passwordFiled)
+        stack.addArrangedSubview(errorLabel)
         stack.addArrangedSubview(loginButton)
         stack.addArrangedSubview(makeDivider())
         stack.addArrangedSubview(registerButton)

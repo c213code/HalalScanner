@@ -10,12 +10,18 @@ import Combine
 import FirebaseAuth
 import FirebaseFirestore
 
+enum AuthErrorField {
+    case email
+    case password
+    case none
+}
 
 class AuthViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     @Published var isLoading = false
     @Published var errorMessage = ""
+    @Published var errorField: AuthErrorField = .none
 
     
     var cancellables = Set<AnyCancellable>()
@@ -33,6 +39,7 @@ class AuthViewModel: ObservableObject {
         Auth.auth().signIn(withEmail: email, password: password) { [weak self] _, error in
             self?.isLoading = false
             if let error = error {
+                self?.handleError(error)
                 self?.errorMessage = error.localizedDescription
                 completion(.failure(error))
             } else {
@@ -46,6 +53,7 @@ class AuthViewModel: ObservableObject {
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
             self?.isLoading = false
             if let error = error {
+                self?.handleError(error)
                 self?.errorMessage = error.localizedDescription
                 completion(.failure(error))
             } else {
@@ -70,6 +78,37 @@ class AuthViewModel: ObservableObject {
             }
     }
     
+    func handleError(_ error: Error) {
+        let nsError = error as NSError
+        let code = AuthErrorCode(_bridgedNSError: nsError)?.code ?? AuthErrorCode(rawValue: nsError.code)
+        
+        switch code {
+              case .wrongPassword, .invalidCredential:
+                  errorMessage = "Қате пароль"
+                  errorField = .password
+
+              case .userNotFound:
+                  errorMessage = "Бұл email тіркелмеген"
+                  errorField = .email
+
+              case .emailAlreadyInUse:
+                  errorMessage = "Бұл email бұрыннан тіркелген"
+                  errorField = .email
+        
+              case .networkError:
+                  errorMessage = "Интернет байланысын тексеріңіз"
+                  errorField = .none
+
+              case .tooManyRequests:
+                  errorMessage = "Тым көп әрекет. Кейінірек қайталаңыз"
+                  errorField = .none
+
+              default:
+                  errorMessage = "Қате орын алды. Қайталап көріңіз"
+                  errorField = .none
+              }
+        
+    }
     
     
 }
