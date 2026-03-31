@@ -16,7 +16,11 @@ class ProfileView : UIView {
     let profileCard = UIView()
     let horizontalStackForCounters = UIStackView()
     let logoutButton = UIButton()
-    
+    let progressCard = UIView()
+    let progressBar = UIView()
+    let progressLabel = UILabel()
+    let progressTitleLabel = UILabel()
+    var progressWidthConstraint: NSLayoutConstraint?
     
 
     override init(frame: CGRect) {
@@ -46,11 +50,6 @@ class ProfileView : UIView {
         horizontalStackForCounters.addArrangedSubview(haramCard)
         
         horizontalStackForCounters.translatesAutoresizingMaskIntoConstraints = false
-        
-        
-        
-        
-        self.setupLogoutButton()
 
     }
     func makeStatCard(value: String, label: String, valueColor: UIColor, labelColor: UIColor, bgColor: UIColor) -> UIView {
@@ -188,14 +187,92 @@ class ProfileView : UIView {
         
         addSubview(logoutButton)
         
+        setupProgressCard()
+        
         
     }
     func setupLogoutButton() {
         NSLayoutConstraint.activate([
-            logoutButton.topAnchor.constraint(equalTo: horizontalStackForCounters.bottomAnchor, constant: 30),
+            logoutButton.topAnchor.constraint(equalTo: progressCard.bottomAnchor, constant: 30),
             logoutButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             logoutButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             logoutButton.heightAnchor.constraint(equalToConstant: 68)
         ])
+    }
+    
+    func setupProgressCard() {
+        progressCard.backgroundColor = .white
+        progressCard.layer.cornerRadius = 14
+        progressCard.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(progressCard)
+        
+        NSLayoutConstraint.activate([
+            progressCard.topAnchor.constraint(equalTo: horizontalStackForCounters.bottomAnchor, constant: 14),
+            progressCard.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            progressCard.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            progressCard.heightAnchor.constraint(equalToConstant: 72)
+        ])
+        
+        progressTitleLabel.text = "Халал пайызы"
+        progressTitleLabel.font = .systemFont(ofSize: 13, weight: .medium)
+        progressTitleLabel.textColor = .systemGray
+        progressTitleLabel.textAlignment = .left
+        progressTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        progressCard.addSubview(progressTitleLabel)
+        
+        progressLabel.text = "0%"
+        progressLabel.font = .systemFont(ofSize: 13, weight: .bold)
+        progressLabel.textColor = UIColor.appGreen
+        progressLabel.translatesAutoresizingMaskIntoConstraints = false
+        progressCard.addSubview(progressLabel)
+        
+        let trackView = UIView()
+        trackView.backgroundColor = .systemGray5
+        trackView.layer.cornerRadius = 5
+        trackView.translatesAutoresizingMaskIntoConstraints = false
+        progressCard.addSubview(trackView)
+        
+        progressBar.backgroundColor = UIColor.appGreen
+        progressBar.layer.cornerRadius = 5
+        progressBar.translatesAutoresizingMaskIntoConstraints = false
+        trackView.addSubview(progressBar)
+        
+        NSLayoutConstraint.activate([
+            progressTitleLabel.topAnchor.constraint(equalTo: progressCard.topAnchor, constant: 14),
+            progressTitleLabel.leadingAnchor.constraint(equalTo: progressCard.leadingAnchor, constant: 16),
+            
+            progressLabel.centerYAnchor.constraint(equalTo: progressTitleLabel.centerYAnchor),
+            progressLabel.trailingAnchor.constraint(equalTo: progressCard.trailingAnchor, constant: -16),
+            
+            trackView.topAnchor.constraint(equalTo: progressTitleLabel.bottomAnchor, constant: 10),
+            trackView.leadingAnchor.constraint(equalTo: progressCard.leadingAnchor, constant: 16),
+            trackView.trailingAnchor.constraint(equalTo: progressCard.trailingAnchor, constant: -16),
+            trackView.heightAnchor.constraint(equalToConstant: 10),
+            
+            progressBar.leadingAnchor.constraint(equalTo: trackView.leadingAnchor),
+            progressBar.topAnchor.constraint(equalTo: trackView.topAnchor),
+            progressBar.bottomAnchor.constraint(equalTo: trackView.bottomAnchor),
+            
+            
+        ])
+        progressWidthConstraint = progressBar.widthAnchor.constraint(equalToConstant: 0)
+        progressWidthConstraint?.isActive = true
+        
+        
+    }
+    func updateProgress(total: Int, halal: Int) {
+        let percent = total > 0 ? CGFloat(halal) / CGFloat(total) : 0
+        let percentInt = Int(percent * 100)
+
+        progressLabel.text = "\(percentInt)%"
+        progressLabel.textColor = percentInt >= 50 ? UIColor.appGreen : UIColor.appRed
+        progressBar.backgroundColor = percentInt >= 50 ? UIColor.appGreen : UIColor.appRed
+
+        let fullWidth = progressCard.bounds.width - 32
+        progressWidthConstraint?.constant = fullWidth * percent
+
+        UIView.animate(withDuration: 0.8, delay: 0.2, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5) {
+            self.layoutIfNeeded()
+        }
     }
 }

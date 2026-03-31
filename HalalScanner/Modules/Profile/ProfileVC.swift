@@ -56,6 +56,7 @@ class ProfileVC: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] total, halal, haram in
                 self?.profileView.setupStatus(total: total, halal: halal, haram: haram)
+                self?.profileView.updateProgress(total: total, halal: halal)
             }
             .store(in: &cancellables)
  
