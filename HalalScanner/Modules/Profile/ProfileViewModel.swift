@@ -48,6 +48,26 @@ class ProfileViewModel : ObservableObject {
             }
         
     }
+    func updateName(_ newName: String, completion: @escaping (Bool) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            completion(false)
+            return
+        }
+        Firestore.firestore().collection("users").document(uid).updateData ([
+            "name" : newName
+        ]) { [weak self] error in
+            if error == nil {
+                DispatchQueue.main.async {
+                    self?.name = newName
+                    completion(true)
+                }
+                
+            }
+            else{
+                completion(false)
+            }
+        }
+    }
     
     
     

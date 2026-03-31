@@ -22,6 +22,10 @@ class ProfileView : UIView {
     let progressTitleLabel = UILabel()
     var progressWidthConstraint: NSLayoutConstraint?
     
+    let accountCard = UIView()
+    let editNameButton = UIButton()
+    
+    
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -188,12 +192,13 @@ class ProfileView : UIView {
         addSubview(logoutButton)
         
         setupProgressCard()
+        setupAccountCard(below: progressCard)
         
         
     }
     func setupLogoutButton() {
         NSLayoutConstraint.activate([
-            logoutButton.topAnchor.constraint(equalTo: progressCard.bottomAnchor, constant: 30),
+            logoutButton.topAnchor.constraint(equalTo: accountCard.bottomAnchor, constant: 30),
             logoutButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             logoutButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             logoutButton.heightAnchor.constraint(equalToConstant: 68)
@@ -260,6 +265,92 @@ class ProfileView : UIView {
         
         
     }
+    
+    func setupAccountCard(below anchorView: UIView) {
+        let sectionLabel = UILabel()
+        sectionLabel.text = "Аккаyнт"
+        sectionLabel.font = .systemFont(ofSize: 13, weight: .medium)
+        sectionLabel.textColor = .systemGray
+        sectionLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(sectionLabel)
+        
+        NSLayoutConstraint.activate([
+            sectionLabel.topAnchor.constraint(equalTo: anchorView.bottomAnchor , constant: 20),
+            sectionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20)
+        ])
+        
+        accountCard.backgroundColor = .white
+        accountCard.layer.cornerRadius = 14
+        accountCard.clipsToBounds = true
+        accountCard.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(accountCard)
+        
+        NSLayoutConstraint.activate([
+            accountCard.topAnchor.constraint(equalTo: sectionLabel.bottomAnchor, constant: 8),
+            accountCard.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            accountCard.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            accountCard.heightAnchor.constraint(equalToConstant: 62)
+        ])
+        
+        let iconContainer = UIView()
+        iconContainer.backgroundColor = UIColor.appGreen.withAlphaComponent(0.15)
+        iconContainer.layer.cornerRadius = 8
+        iconContainer.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(iconContainer)
+        
+        let iconLabel = UILabel()
+        iconLabel.text = "✏️"
+        iconLabel.font = .systemFont(ofSize: 18)
+        iconLabel.translatesAutoresizingMaskIntoConstraints = false
+        iconContainer.addSubview(iconLabel)
+        
+        NSLayoutConstraint.activate([
+            iconContainer.centerYAnchor.constraint(equalTo: accountCard.centerYAnchor),
+            iconContainer.leadingAnchor.constraint(equalTo: accountCard.leadingAnchor, constant: 14),
+            iconContainer.widthAnchor.constraint(equalToConstant: 42),
+            iconContainer.heightAnchor.constraint(equalToConstant: 42),
+            
+            iconLabel.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+            iconLabel.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor)
+        ])
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "Атымды өзгерту"
+        titleLabel.font = .systemFont(ofSize: 17, weight: .medium)
+        titleLabel.textColor = .label
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        accountCard.addSubview(titleLabel)
+        
+        NSLayoutConstraint.activate([
+            titleLabel.centerYAnchor.constraint(equalTo: accountCard.centerYAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: iconContainer.trailingAnchor, constant: 12)
+        ])
+        
+        let chevron = UIImageView(image: UIImage(systemName: "chevron.right"))
+        chevron.tintColor = .systemGray3
+        chevron.translatesAutoresizingMaskIntoConstraints = false
+        accountCard.addSubview(chevron)
+        
+        NSLayoutConstraint.activate([
+            chevron.centerYAnchor.constraint(equalTo: accountCard.centerYAnchor),
+            chevron.trailingAnchor.constraint(equalTo: accountCard.trailingAnchor, constant: -14),
+            chevron.widthAnchor.constraint(equalToConstant: 8),
+            chevron.heightAnchor.constraint(equalToConstant: 14)
+        ])
+        
+        editNameButton.backgroundColor = .clear
+        editNameButton.translatesAutoresizingMaskIntoConstraints = false
+        accountCard.addSubview(editNameButton)
+        
+        NSLayoutConstraint.activate([
+            editNameButton.topAnchor.constraint(equalTo: accountCard.topAnchor),
+            editNameButton.bottomAnchor.constraint(equalTo: accountCard.bottomAnchor),
+            editNameButton.leadingAnchor.constraint(equalTo: accountCard.leadingAnchor),
+            editNameButton.trailingAnchor.constraint(equalTo: accountCard.trailingAnchor)
+        ])
+        
+        
+    }
     func updateProgress(total: Int, halal: Int) {
         let percent = total > 0 ? CGFloat(halal) / CGFloat(total) : 0
         let percentInt = Int(percent * 100)
@@ -275,4 +366,6 @@ class ProfileView : UIView {
             self.layoutIfNeeded()
         }
     }
+    
+   
 }

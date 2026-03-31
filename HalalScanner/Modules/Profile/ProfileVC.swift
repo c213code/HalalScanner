@@ -32,6 +32,7 @@ class ProfileVC: UIViewController {
         bindViewModel()
         viewModel.loadUserData()
         profileView.logoutButton.addTarget(self, action: #selector(logoutTapped), for: .touchUpInside)
+        profileView.editNameButton.addTarget(self, action: #selector(editNameTapped), for: .touchUpInside)
 
         
     }
@@ -64,6 +65,32 @@ class ProfileVC: UIViewController {
     
     @objc func logoutTapped() {
         coordinator?.logout()
+    }
+    
+    @objc func editNameTapped() {
+        let alert = UIAlertController(title: "Атымды өзгерту", message: nil, preferredStyle: .alert)
+        alert.addTextField { [weak self] textField in
+            textField.placeholder = "Жаңа атыңызды енгізіңіз"
+            textField.text = self?.viewModel.name
+            textField.autocapitalizationType = .words
+        }
+        let saveAction = UIAlertAction(title: "Сақтау", style: .default) { [weak self] _ in
+            guard let self = self, let newName = alert.textFields?.first?.text,!newName.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+            
+            self.viewModel.updateName(newName) { success in
+                if !success {
+                    let errrorAlert = UIAlertController(title: "Қате", message:  "Атыңызды сақтау мүмкін болмады", preferredStyle: .alert)
+                    errrorAlert.addAction(UIAlertAction(title: "Ок", style: .default))
+                    self.present(errrorAlert, animated: true)
+                }
+            }
+        }
+        
+        let cancelAction = UIAlertAction(title: "Бас тарту", style: .cancel)
+        
+        alert.addAction(cancelAction)
+        alert.addAction(saveAction)
+        present(alert, animated: true)
     }
     
     
