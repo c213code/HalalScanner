@@ -70,5 +70,44 @@ class ProfileViewModel : ObservableObject {
     }
     
     
+    func updatePassword(current: String, new: String, completion: @escaping (Result<Void, String>) -> Void) {
+        guard let user = Auth.auth().currentUser, let email = user.email else {
+            completion(.failure("Пайдаланушы табылмады"))
+            return 
+        }
+        
+        let credential = EmailAuthProvider.credential(withEmail: email, password: current)
+        
+        user.reauthenticate(with: credential) {_ , error in
+            if let error = error {
+                let nsError = error as NSError
+                let code = AuthErrorCode(rawValue: nsError.code)
+                switch code {
+                case .wrongPassword, .invalidCredential:
+                        completion(.failure("Ағымдағы пароль қате"))
+                default:
+                    completion(.failure("Қате орын алды"))
+                }
+                return
+            }
+            user.updatePassword(to: new) { error in
+                if let error = error{
+                   let nsError = error as NSError
+                    let code = AuthErrorCode(rawValue: nsError.code)
+                    switch code {
+                    case .weakPassword:
+                            completion(.failure("Пароль тым қысқа (мин. 6 таңба)"))
+                    default:
+                            completion(.failure("Парольді өзгерту мүмкін болмады"))
+                    }
+                }
+                else {
+                    completion(.success(()))
+                }
+            }
+        }
+    }
+    
+    
     
 }

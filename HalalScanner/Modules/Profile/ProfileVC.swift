@@ -33,6 +33,7 @@ class ProfileVC: UIViewController {
         viewModel.loadUserData()
         profileView.logoutButton.addTarget(self, action: #selector(logoutTapped), for: .touchUpInside)
         profileView.editNameButton.addTarget(self, action: #selector(editNameTapped), for: .touchUpInside)
+        profileView.editPasswordButton.addTarget(self, action:  #selector(editPasswordTapped), for: .touchUpInside)
     }
     
     func bindViewModel() {
@@ -88,6 +89,58 @@ class ProfileVC: UIViewController {
         
         alert.addAction(cancelAction)
         alert.addAction(saveAction)
+        present(alert, animated: true)
+    }
+    @objc func editPasswordTapped() {
+        let alert = UIAlertController(title: "Құпия сөзді өзгерту", message: nil, preferredStyle: .alert)
+        alert.addTextField { [weak self] textField in
+            textField.placeholder = "Қазіргі пароль"
+            textField.isSecureTextEntry = true
+        }
+        alert.addTextField { field in
+            field.placeholder = "Жаңа пароль (мин. 6 таңба)"
+            field.isSecureTextEntry = true
+            }
+        alert.addTextField { field in
+            field.placeholder = "Жаңа парольді растаңыз"
+            field.isSecureTextEntry = true
+        }
+        let saveAction = UIAlertAction(title: "Өзгерту", style: .default) { [weak self] _ in
+            guard let self = self,
+                  let current = alert.textFields?[0].text, !current.isEmpty,
+                  let newPass = alert.textFields?[1].text, !newPass.isEmpty,
+                  let confirm = alert.textFields?[2].text else { return }
+            
+            guard newPass == confirm else {
+                self.showError("Жаңа парольдер сәйкес келмейді")
+                return
+            }
+            
+            guard newPass.count >= 6 else {
+                self.showError("Пароль тым қысқа (мин. 6 таңба)")
+                return
+            }
+            
+            self.viewModel.updatePassword(current: current, new: confirm) { result in
+                switch result {
+                case .success:
+                    let ok = UIAlertController(title: "✅", message: "Пароль сәтті өзгертілді", preferredStyle: .alert)
+                    ok.addAction(UIAlertAction(title: "Ok", style: .default))
+                    self.present(ok, animated: true)
+                case .failure(let message):
+                    self.showError(message)
+                }
+            }
+        }
+        
+        alert.addAction(UIAlertAction(title: "Бас тарту", style: .cancel))
+        alert.addAction(saveAction)
+        present(alert, animated: true)
+        
+    }
+    func showError(_ message: String) {
+        let alert = UIAlertController(title: "Қате", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
     
