@@ -29,6 +29,7 @@ class FavoriteCell: UICollectionViewCell {
         contentView.backgroundColor = .white
         contentView.layer.cornerRadius = 18
         contentView.layer.masksToBounds = true
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         
         iconContainer.backgroundColor = UIColor.appCardGreen
         iconContainer.layer.cornerRadius = 14
@@ -49,16 +50,16 @@ class FavoriteCell: UICollectionViewCell {
             iconContainer.heightAnchor.constraint(equalToConstant: 60)
         ])
         
-        nameLabel.font = .systemFont(ofSize: 19, weight: .bold)
+        nameLabel.font = .systemFont(ofSize: 15, weight: .bold)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.numberOfLines = 2
+        nameLabel.numberOfLines = 3
         nameLabel.textAlignment = .center
-        nameLabel.lineBreakMode = .byCharWrapping
+        nameLabel.lineBreakMode = .byWordWrapping
         nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         nameLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         
         
-        halalBadge.font = .systemFont(ofSize: 14, weight: .bold)
+        halalBadge.font = .systemFont(ofSize: 13, weight: .bold)
         halalBackground.layer.cornerRadius = 10
         halalBadge.translatesAutoresizingMaskIntoConstraints = false
         halalBackground.translatesAutoresizingMaskIntoConstraints = false
@@ -85,8 +86,12 @@ class FavoriteCell: UICollectionViewCell {
         contentView.addSubview(stack)
     
         NSLayoutConstraint.activate([
-            stack.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            stack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+            stack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            stack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+            stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            
+            contentView.widthAnchor.constraint(equalToConstant: (UIScreen.main.bounds.width - 44)/2 )
         ])
         
     }

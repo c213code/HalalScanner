@@ -25,7 +25,7 @@ class FavoritesView: UIView {
         layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         
         let width = (UIScreen.main.bounds.width - 44) / 2
-        layout.itemSize = CGSize(width: width, height: width)
+        layout.itemSize = CGSize(width: width, height: 180)
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         
         collectionView.backgroundColor = .systemGray6

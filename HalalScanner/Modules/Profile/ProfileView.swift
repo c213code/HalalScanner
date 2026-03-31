@@ -18,6 +18,7 @@ class ProfileView : UIView {
     let logoutButton = UIButton()
     
     
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         
