@@ -24,6 +24,10 @@ class ProfileView : UIView {
     
     let accountCard = UIView()
     let editNameButton = UIButton()
+    let editPasswordButton = UIButton()
+    
+    
+    
     
     
 
@@ -289,24 +293,66 @@ class ProfileView : UIView {
             accountCard.topAnchor.constraint(equalTo: sectionLabel.bottomAnchor, constant: 8),
             accountCard.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             accountCard.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            accountCard.heightAnchor.constraint(equalToConstant: 62)
+            accountCard.heightAnchor.constraint(equalToConstant: 124)
         ])
         
+        let nameRow = makeAccountRow(title: "Атымды өзгерту", icon: "✏️", iconBackgroundColor: UIColor.appGreen.withAlphaComponent(0.15), button: editNameButton)
+        let passwordRow = makeAccountRow(title: "Құпия сөзді өзгерту", icon: "🔒", iconBackgroundColor: UIColor.systemBlue.withAlphaComponent(0.15), button: editPasswordButton)
+        
+        
+        let devider = UIView()
+        devider.backgroundColor = .systemGray5
+        devider.translatesAutoresizingMaskIntoConstraints = false
+        
+        accountCard.addSubview(nameRow)
+        accountCard.addSubview(devider)
+        accountCard.addSubview(passwordRow)
+        
+        
+        NSLayoutConstraint.activate([
+            nameRow.topAnchor.constraint(equalTo: accountCard.topAnchor),
+            nameRow.leadingAnchor.constraint(equalTo: accountCard.leadingAnchor),
+            nameRow.trailingAnchor.constraint(equalTo: accountCard.trailingAnchor),
+            nameRow.heightAnchor.constraint(equalToConstant: 62),
+            passwordRow.heightAnchor.constraint(equalToConstant: 62),
+            
+            
+            devider.topAnchor.constraint(equalTo: nameRow.bottomAnchor),
+            devider.leadingAnchor.constraint(equalTo: accountCard.leadingAnchor, constant: 14),
+            devider.trailingAnchor.constraint(equalTo: accountCard.trailingAnchor),
+            devider.heightAnchor.constraint(equalToConstant: 0.5),
+            
+            passwordRow.topAnchor.constraint(equalTo: devider.bottomAnchor),
+            passwordRow.leadingAnchor.constraint(equalTo: accountCard.leadingAnchor),
+            passwordRow.trailingAnchor.constraint(equalTo: accountCard.trailingAnchor),
+            passwordRow.bottomAnchor.constraint(equalTo: accountCard.bottomAnchor)
+            
+            
+        ])
+        
+        
+        
+    }
+    
+    func makeAccountRow(title: String, icon: String, iconBackgroundColor: UIColor, button: UIButton) -> UIView{
+        let row = UIView()
+        row.translatesAutoresizingMaskIntoConstraints = false
+        
         let iconContainer = UIView()
-        iconContainer.backgroundColor = UIColor.appGreen.withAlphaComponent(0.15)
+        iconContainer.backgroundColor = iconBackgroundColor
         iconContainer.layer.cornerRadius = 8
         iconContainer.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(iconContainer)
+        row.addSubview(iconContainer)
         
         let iconLabel = UILabel()
-        iconLabel.text = "✏️"
+        iconLabel.text = icon
         iconLabel.font = .systemFont(ofSize: 18)
         iconLabel.translatesAutoresizingMaskIntoConstraints = false
         iconContainer.addSubview(iconLabel)
         
         NSLayoutConstraint.activate([
-            iconContainer.centerYAnchor.constraint(equalTo: accountCard.centerYAnchor),
-            iconContainer.leadingAnchor.constraint(equalTo: accountCard.leadingAnchor, constant: 14),
+            iconContainer.centerYAnchor.constraint(equalTo: row.centerYAnchor),
+            iconContainer.leadingAnchor.constraint(equalTo: row.leadingAnchor, constant: 14),
             iconContainer.widthAnchor.constraint(equalToConstant: 42),
             iconContainer.heightAnchor.constraint(equalToConstant: 42),
             
@@ -315,41 +361,41 @@ class ProfileView : UIView {
         ])
         
         let titleLabel = UILabel()
-        titleLabel.text = "Атымды өзгерту"
+        titleLabel.text = title
         titleLabel.font = .systemFont(ofSize: 17, weight: .medium)
         titleLabel.textColor = .label
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        accountCard.addSubview(titleLabel)
+        row.addSubview(titleLabel)
         
         NSLayoutConstraint.activate([
-            titleLabel.centerYAnchor.constraint(equalTo: accountCard.centerYAnchor),
+            titleLabel.centerYAnchor.constraint(equalTo: row.centerYAnchor),
             titleLabel.leadingAnchor.constraint(equalTo: iconContainer.trailingAnchor, constant: 12)
         ])
         
         let chevron = UIImageView(image: UIImage(systemName: "chevron.right"))
         chevron.tintColor = .systemGray3
         chevron.translatesAutoresizingMaskIntoConstraints = false
-        accountCard.addSubview(chevron)
+        row.addSubview(chevron)
         
         NSLayoutConstraint.activate([
-            chevron.centerYAnchor.constraint(equalTo: accountCard.centerYAnchor),
-            chevron.trailingAnchor.constraint(equalTo: accountCard.trailingAnchor, constant: -14),
+            chevron.centerYAnchor.constraint(equalTo: row.centerYAnchor),
+            chevron.trailingAnchor.constraint(equalTo: row.trailingAnchor, constant: -14),
             chevron.widthAnchor.constraint(equalToConstant: 8),
             chevron.heightAnchor.constraint(equalToConstant: 14)
         ])
         
-        editNameButton.backgroundColor = .clear
-        editNameButton.translatesAutoresizingMaskIntoConstraints = false
-        accountCard.addSubview(editNameButton)
+        button.backgroundColor = .clear
+        button.translatesAutoresizingMaskIntoConstraints = false
+        row.addSubview(button)
         
         NSLayoutConstraint.activate([
-            editNameButton.topAnchor.constraint(equalTo: accountCard.topAnchor),
-            editNameButton.bottomAnchor.constraint(equalTo: accountCard.bottomAnchor),
-            editNameButton.leadingAnchor.constraint(equalTo: accountCard.leadingAnchor),
-            editNameButton.trailingAnchor.constraint(equalTo: accountCard.trailingAnchor)
+            button.topAnchor.constraint(equalTo: row.topAnchor),
+            button.bottomAnchor.constraint(equalTo: row.bottomAnchor),
+            button.leadingAnchor.constraint(equalTo: row.leadingAnchor),
+            button.trailingAnchor.constraint(equalTo: row.trailingAnchor)
         ])
         
-        
+        return row
     }
     func updateProgress(total: Int, halal: Int) {
         let percent = total > 0 ? CGFloat(halal) / CGFloat(total) : 0

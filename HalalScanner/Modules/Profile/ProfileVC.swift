@@ -33,8 +33,6 @@ class ProfileVC: UIViewController {
         viewModel.loadUserData()
         profileView.logoutButton.addTarget(self, action: #selector(logoutTapped), for: .touchUpInside)
         profileView.editNameButton.addTarget(self, action: #selector(editNameTapped), for: .touchUpInside)
-
-        
     }
     
     func bindViewModel() {
