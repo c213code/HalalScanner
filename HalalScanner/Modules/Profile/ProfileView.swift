@@ -199,10 +199,8 @@ class ProfileView : UIView {
         addSubview(logoutButton)
         
         setupProgressCard()
-        setupAccountCard(below: progressCard)
-        createSupportCard(below: accountCard)
         
-        
+        enterCardAtt()
     }
     func setupLogoutButton() {
         NSLayoutConstraint.activate([
@@ -274,9 +272,10 @@ class ProfileView : UIView {
         
     }
     
-    func setupAccountCard(below anchorView: UIView) {
+    
+    func createSupportCard(below anchorView: UIView, sectionText: String, card: UIView, row1: UIView, row2: UIView) -> UIView{
         let sectionLabel = UILabel()
-        sectionLabel.text = "Аккаyнт"
+        sectionLabel.text = sectionText
         sectionLabel.font = .systemFont(ofSize: 13, weight: .medium)
         sectionLabel.textColor = .systemGray
         sectionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -287,118 +286,70 @@ class ProfileView : UIView {
             sectionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20)
         ])
         
-        accountCard.backgroundColor = .white
-        accountCard.layer.cornerRadius = 14
-        accountCard.clipsToBounds = true
-        accountCard.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(accountCard)
+        
+        card.backgroundColor = .white
+        card.layer.cornerRadius = 14
+        card.clipsToBounds = true
+        card.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(card)
         
         NSLayoutConstraint.activate([
-            accountCard.topAnchor.constraint(equalTo: sectionLabel.bottomAnchor, constant: 8),
-            accountCard.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            accountCard.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            accountCard.heightAnchor.constraint(equalToConstant: 124)
+            card.topAnchor.constraint(equalTo: sectionLabel.bottomAnchor, constant: 8),
+            card.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            card.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            card.heightAnchor.constraint(equalToConstant: 124)
         ])
         
-        let nameRow = makeAccountRow(title: "Атымды өзгерту", icon: "✏️", iconBackgroundColor: UIColor.appGreen.withAlphaComponent(0.15), button: editNameButton)
-        let passwordRow = makeAccountRow(title: "Құпия сөзді өзгерту", icon: "🔒", iconBackgroundColor: UIColor.systemBlue.withAlphaComponent(0.15), button: editPasswordButton)
-        
+        let firstRow = row1
+        let secondRow = row2
         
         let devider = UIView()
         devider.backgroundColor = .systemGray5
         devider.translatesAutoresizingMaskIntoConstraints = false
         
-        accountCard.addSubview(nameRow)
-        accountCard.addSubview(devider)
-        accountCard.addSubview(passwordRow)
+        card.addSubview(firstRow)
+        card.addSubview(devider)
+        card.addSubview(secondRow)
         
         
         NSLayoutConstraint.activate([
-            nameRow.topAnchor.constraint(equalTo: accountCard.topAnchor),
-            nameRow.leadingAnchor.constraint(equalTo: accountCard.leadingAnchor),
-            nameRow.trailingAnchor.constraint(equalTo: accountCard.trailingAnchor),
-            nameRow.heightAnchor.constraint(equalToConstant: 62),
-            passwordRow.heightAnchor.constraint(equalToConstant: 62),
+            firstRow.topAnchor.constraint(equalTo: card.topAnchor),
+            firstRow.leadingAnchor.constraint(equalTo: card.leadingAnchor),
+            firstRow.trailingAnchor.constraint(equalTo: card.trailingAnchor),
+            firstRow.heightAnchor.constraint(equalToConstant: 62),
+            secondRow.heightAnchor.constraint(equalToConstant: 62),
             
             
-            devider.topAnchor.constraint(equalTo: nameRow.bottomAnchor),
-            devider.leadingAnchor.constraint(equalTo: accountCard.leadingAnchor, constant: 14),
-            devider.trailingAnchor.constraint(equalTo: accountCard.trailingAnchor),
+            devider.topAnchor.constraint(equalTo: firstRow.bottomAnchor),
+            devider.leadingAnchor.constraint(equalTo: card.leadingAnchor, constant: 14),
+            devider.trailingAnchor.constraint(equalTo: card.trailingAnchor),
             devider.heightAnchor.constraint(equalToConstant: 0.5),
             
-            passwordRow.topAnchor.constraint(equalTo: devider.bottomAnchor),
-            passwordRow.leadingAnchor.constraint(equalTo: accountCard.leadingAnchor),
-            passwordRow.trailingAnchor.constraint(equalTo: accountCard.trailingAnchor),
-            passwordRow.bottomAnchor.constraint(equalTo: accountCard.bottomAnchor)
-            
+            secondRow.topAnchor.constraint(equalTo: devider.bottomAnchor),
+            secondRow.leadingAnchor.constraint(equalTo: card.leadingAnchor),
+            secondRow.trailingAnchor.constraint(equalTo: card.trailingAnchor),
+            secondRow.bottomAnchor.constraint(equalTo: card.bottomAnchor)
             
         ])
-        
-        
+        return card
         
     }
     
-    func createSupportCard(below anchorView: UIView) {
-        let sectionLabel = UILabel()
-        sectionLabel.text = "Қолдау"
-        sectionLabel.font = .systemFont(ofSize: 13, weight: .medium)
-        sectionLabel.textColor = .systemGray
-        sectionLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(sectionLabel)
+    func enterCardAtt() {
+        let nameRow = makeAccountRow(title: "Атымды өзгерту", icon: "✏️", iconBackgroundColor: UIColor.appGreen.withAlphaComponent(0.15), button: editNameButton)
+        let passwordRow = makeAccountRow(title: "Құпия сөзді өзгерту", icon: "🔒", iconBackgroundColor: UIColor.systemBlue.withAlphaComponent(0.15), button: editPasswordButton)
         
-        NSLayoutConstraint.activate([
-            sectionLabel.topAnchor.constraint(equalTo: anchorView.bottomAnchor , constant: 20),
-            sectionLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20)
-        ])
-        
-        supportCard.backgroundColor = .white
-        supportCard.layer.cornerRadius = 14
-        supportCard.clipsToBounds = true
-        supportCard.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(supportCard)
-        
-        NSLayoutConstraint.activate([
-            supportCard.topAnchor.constraint(equalTo: sectionLabel.bottomAnchor, constant: 8),
-            supportCard.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            supportCard.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            supportCard.heightAnchor.constraint(equalToConstant: 124)
-        ])
+        createSupportCard(below: progressCard, sectionText: "Аккаунт", card: accountCard, row1: nameRow, row2: passwordRow)
         
         let ratingRow = makeAccountRow(title: "Бағалау", icon: "⭐️", iconBackgroundColor: UIColor.blue.withAlphaComponent(0.15), button: ratingButton)
         let feedbackRow = makeAccountRow(title: "Байланыс/Сұрақ", icon: "❓", iconBackgroundColor: UIColor.red.withAlphaComponent(0.15), button: feedbackButton)
         
-        let devider = UIView()
-        devider.backgroundColor = .systemGray5
-        devider.translatesAutoresizingMaskIntoConstraints = false
         
-        supportCard.addSubview(ratingRow)
-        supportCard.addSubview(devider)
-        supportCard.addSubview(feedbackRow)
+        createSupportCard(below: accountCard, sectionText: "Қолдау", card: supportCard, row1: ratingRow, row2: feedbackRow)
         
         
-        NSLayoutConstraint.activate([
-            ratingRow.topAnchor.constraint(equalTo: supportCard.topAnchor),
-            ratingRow.leadingAnchor.constraint(equalTo: supportCard.leadingAnchor),
-            ratingRow.trailingAnchor.constraint(equalTo: supportCard.trailingAnchor),
-            ratingRow.heightAnchor.constraint(equalToConstant: 62),
-            feedbackRow.heightAnchor.constraint(equalToConstant: 62),
-            
-            
-            devider.topAnchor.constraint(equalTo: ratingRow.bottomAnchor),
-            devider.leadingAnchor.constraint(equalTo: supportCard.leadingAnchor, constant: 14),
-            devider.trailingAnchor.constraint(equalTo: supportCard.trailingAnchor),
-            devider.heightAnchor.constraint(equalToConstant: 0.5),
-            
-            feedbackRow.topAnchor.constraint(equalTo: devider.bottomAnchor),
-            feedbackRow.leadingAnchor.constraint(equalTo: supportCard.leadingAnchor),
-            feedbackRow.trailingAnchor.constraint(equalTo: supportCard.trailingAnchor),
-            feedbackRow.bottomAnchor.constraint(equalTo: supportCard.bottomAnchor)
-            
-            
-        ])
-        
-
     }
+    
     
     func makeAccountRow(title: String, icon: String, iconBackgroundColor: UIColor, button: UIButton) -> UIView{
         let row = UIView()
