@@ -13,8 +13,7 @@ class ProductSheetView : UIView {
        let emojiContainer = UIView()
        let nameLabel = UILabel()
        let categoryLabel = UILabel()
-       let halalLabel = UILabel()
-       let halalBackground = UIView()
+       let halalBadge = HalalBadgeView()
 
        let saveButton = UIButton()
        let retryButton = UIButton()
@@ -23,6 +22,7 @@ class ProductSheetView : UIView {
        let statusValueLabel = UILabel()
        let caloriesValueLabel = UILabel()
        let categoryValueLabel = UILabel()
+        
 
     
     override init(frame: CGRect) {
@@ -37,9 +37,11 @@ class ProductSheetView : UIView {
            nameLabel.text = viewModel.name
            categoryLabel.text = viewModel.category
 
-           halalLabel.text = viewModel.halalTitle
-           halalLabel.textColor = viewModel.halalTextColor
-           halalBackground.backgroundColor = viewModel.halalBackgroundColor
+//           halalLabel.text = viewModel.halalTitle
+//           halalLabel.textColor = viewModel.halalTextColor
+//           halalBackground.backgroundColor = viewModel.halalBackgroundColor
+        
+            halalBadge.configure(isHalal:  viewModel.isHalal)
            emojiContainer.backgroundColor = viewModel.emojiBackgroundColor
 
            confidenceValueLabel.text = viewModel.confidenceText
@@ -100,24 +102,6 @@ class ProductSheetView : UIView {
         infoStack.addArrangedSubview(categoryLabel)
         infoStack.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
-        halalLabel.font = .systemFont(ofSize: 20, weight: .bold)
-        halalLabel.setContentHuggingPriority(.required, for: .horizontal)
-        halalLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-
-        halalBackground.setContentCompressionResistancePriority(.required, for: .horizontal)
-        halalBackground.layer.cornerRadius = 12
-        halalBackground.translatesAutoresizingMaskIntoConstraints = false
-        halalLabel.translatesAutoresizingMaskIntoConstraints = false
-
-        halalBackground.addSubview(halalLabel)
-
-        NSLayoutConstraint.activate([
-            halalLabel.topAnchor.constraint(equalTo: halalBackground.topAnchor, constant: 10),
-            halalLabel.bottomAnchor.constraint(equalTo: halalBackground.bottomAnchor, constant: -10),
-            halalLabel.leadingAnchor.constraint(equalTo: halalBackground.leadingAnchor, constant: 15),
-            halalLabel.trailingAnchor.constraint(equalTo: halalBackground.trailingAnchor, constant: -15)
-        ])
-
         horizontalInfoStack.axis = .horizontal
         horizontalInfoStack.spacing = 20
         horizontalInfoStack.alignment = .center
@@ -125,7 +109,7 @@ class ProductSheetView : UIView {
 
         horizontalInfoStack.addArrangedSubview(emojiContainer)
         horizontalInfoStack.addArrangedSubview(infoStack)
-        horizontalInfoStack.addArrangedSubview(halalBackground)
+        horizontalInfoStack.addArrangedSubview(halalBadge)
 
         addSubview(horizontalInfoStack)
 

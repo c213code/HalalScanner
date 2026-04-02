@@ -88,6 +88,16 @@ class ProductSheetViewModel {
               return .systemOrange
           }
       }
+    var isHalal: Bool {
+        switch product.halalStatus {
+        case .halal:
+            return true
+        case .haram:
+            return false
+        case .doubtful:
+            return false
+        }
+    }
     
     
     func saveToFavorites(completion: @escaping (Bool) -> Void) {

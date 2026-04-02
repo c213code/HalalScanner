@@ -14,8 +14,7 @@ class ScanCell: UITableViewCell {
     let iconContainer = UIView()
     let nameLabel = UILabel()
     let categoryLabel = UILabel()
-    let halalBadge = UILabel()
-    let halalBackground = UIView()
+    let halalBadge = HalalBadgeView()
     let nameStack = UIStackView()
     let dateLabel = UILabel()
 
@@ -64,30 +63,16 @@ class ScanCell: UITableViewCell {
         
         nameStack.axis = .vertical
         nameStack.spacing = 0
-        
-        
         nameStack.addArrangedSubview(nameLabel)
         nameStack.addArrangedSubview(categoryLabel)
-        
-        halalBadge.font = .systemFont(ofSize: 18, weight: .bold)
-        halalBadge.textColor = isHalal ? .systemGreen : .systemRed
-        
-        halalBackground.backgroundColor = isHalal ? UIColor.green.withAlphaComponent(0.3) : UIColor.red.withAlphaComponent(0.3)
-        
-        halalBackground.translatesAutoresizingMaskIntoConstraints = false
-        halalBadge.translatesAutoresizingMaskIntoConstraints = false
-        halalBackground.setContentHuggingPriority(.required, for: .horizontal)
-        halalBackground.layer.cornerRadius = 10
 
-        
-        contentView.addSubview(halalBackground)
-        halalBackground.addSubview(halalBadge)
-        
+        contentView.addSubview(halalBadge)
+          
         NSLayoutConstraint.activate([
-            halalBadge.topAnchor.constraint(equalTo: halalBackground.topAnchor, constant: 10),
-            halalBadge.bottomAnchor.constraint(equalTo: halalBackground.bottomAnchor, constant: -10),
-            halalBadge.leadingAnchor.constraint(equalTo: halalBackground.leadingAnchor, constant: 15),
-            halalBadge.trailingAnchor.constraint(equalTo: halalBackground.trailingAnchor, constant: -15)
+            halalBadge.topAnchor.constraint(equalTo: halalBadge.topAnchor, constant: 10),
+            halalBadge.bottomAnchor.constraint(equalTo: halalBadge.bottomAnchor, constant: -10),
+            halalBadge.leadingAnchor.constraint(equalTo: halalBadge.leadingAnchor, constant: 15),
+            halalBadge.trailingAnchor.constraint(equalTo: halalBadge.trailingAnchor, constant: -15)
         ])
         
         dateLabel.font = .systemFont(ofSize: 16, weight: .regular)
@@ -102,7 +87,7 @@ class ScanCell: UITableViewCell {
         rightStack.spacing = 4
         rightStack.alignment = .trailing
         rightStack.translatesAutoresizingMaskIntoConstraints = false
-        rightStack.addArrangedSubview(halalBackground)
+        rightStack.addArrangedSubview(halalBadge)
         rightStack.addArrangedSubview(dateLabel)
         contentView.addSubview(rightStack)
         
@@ -126,7 +111,7 @@ class ScanCell: UITableViewCell {
             
             
             nameStack.leadingAnchor.constraint(equalTo: iconContainer.trailingAnchor, constant: 10),
-            nameStack.trailingAnchor.constraint(equalTo: halalBackground.leadingAnchor, constant: -10),
+            nameStack.trailingAnchor.constraint(equalTo: halalBadge.leadingAnchor, constant: -10),
             nameStack.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             nameStack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
             nameStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
@@ -146,9 +131,7 @@ class ScanCell: UITableViewCell {
            nameLabel.text = scan["name"] as? String
            iconLabel.text = scan["emoji"] as? String
            categoryLabel.text = scan["category"] as? String
-           halalBadge.text = isHalal ? "Халал" : "Халал емес"
-           halalBadge.textColor = isHalal ? .systemGreen : .systemRed
-           halalBackground.backgroundColor = isHalal ? UIColor.green.withAlphaComponent(0.3) : UIColor.red.withAlphaComponent(0.3)
+        halalBadge.configure(isHalal: isHalal)
         iconContainer.backgroundColor = isHalal ? UIColor.appCardGreen : UIColor.appCardRed
         
         if let timestamp = scan["date"] as? Timestamp {
@@ -157,9 +140,9 @@ class ScanCell: UITableViewCell {
             formatter.dateFormat = "dd MMM, HH:mm"
             dateLabel.text = formatter.string(from: date)
         }
-        
-        halalBackground.setContentHuggingPriority(.required, for: .horizontal)
-        halalBadge.setContentHuggingPriority(.required, for: .horizontal)
+//        
+//        halalBackground.setContentHuggingPriority(.required, for: .horizontal)
+//        halalBadge.setContentHuggingPriority(.required, for: .horizontal)
         
     }
 }

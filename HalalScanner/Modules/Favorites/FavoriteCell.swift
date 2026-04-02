@@ -11,10 +11,9 @@ class FavoriteCell: UICollectionViewCell {
     let iconLabel = UILabel()
     let iconContainer = UIView()
     let nameLabel = UILabel()
-    let halalBadge = UILabel()
-    let halalBackground = UIView()
-    
+
     var isHalal: Bool = false
+    let halalBadge = HalalBadgeView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,21 +57,6 @@ class FavoriteCell: UICollectionViewCell {
         nameLabel.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         nameLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
         
-        
-        halalBadge.font = .systemFont(ofSize: 13, weight: .bold)
-        halalBackground.layer.cornerRadius = 10
-        halalBadge.translatesAutoresizingMaskIntoConstraints = false
-        halalBackground.translatesAutoresizingMaskIntoConstraints = false
-        
-        halalBackground.addSubview(halalBadge)
-        
-        NSLayoutConstraint.activate([
-            halalBadge.topAnchor.constraint(equalTo: halalBackground.topAnchor, constant: 10),
-            halalBadge.bottomAnchor.constraint(equalTo: halalBackground.bottomAnchor, constant: -10),
-            halalBadge.leadingAnchor.constraint(equalTo: halalBackground.leadingAnchor, constant: 10),
-            halalBadge.trailingAnchor.constraint(equalTo: halalBackground.trailingAnchor, constant: -10)
-        ])
-        
         let stack = UIStackView()
         stack.axis = .vertical
         stack.spacing = 10
@@ -81,7 +65,7 @@ class FavoriteCell: UICollectionViewCell {
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.addArrangedSubview(iconContainer)
         stack.addArrangedSubview(nameLabel)
-        stack.addArrangedSubview(halalBackground)
+        stack.addArrangedSubview(halalBadge)
         
         contentView.addSubview(stack)
     
@@ -99,11 +83,7 @@ class FavoriteCell: UICollectionViewCell {
         nameLabel.text = item["name"] as? String
         iconLabel.text = item["emoji"] as? String
         isHalal = item["isHalal"] as? Bool ?? false
-        halalBadge.text = isHalal ? "Халал" : "Халал емес"
-        halalBadge.textColor = isHalal ? .systemGreen : .systemRed
-        halalBackground.backgroundColor = isHalal ? UIColor.green.withAlphaComponent(0.2) : UIColor.red.withAlphaComponent(0.2)
+        halalBadge.configure(isHalal: isHalal)
         iconContainer.backgroundColor = isHalal ? .appCardGreen : .appCardRed
-        
-        
     }
 }
