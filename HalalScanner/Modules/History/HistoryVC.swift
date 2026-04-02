@@ -24,6 +24,7 @@ class HistoryVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Тарих"
+        showHintIfNeeded()
         bindViewModel()
         navigationItem.titleView = nil
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -58,6 +59,20 @@ class HistoryVC: UIViewController {
                     print("ДОБАВЛЕНО В ИЗБРАННОЕ")
                 }
             }
+    }
+    
+    func showHintIfNeeded() {
+        let keyForhistory = "swipeForFav"
+        guard !UserDefaults.standard.bool(forKey: keyForhistory) else { return }
+        UserDefaults.standard.set(true, forKey: keyForhistory)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            let hint = UIAlertController(title: "💡 Кеңес", message: "Элементті солға тартыңыз — элеменетті сақтайсыз", preferredStyle: .alert)
+            hint.addAction(UIAlertAction(title: "Түсіндім!", style: .default))
+            self.present(hint, animated: true)
+        }
+        
+        
     }
 }
 
