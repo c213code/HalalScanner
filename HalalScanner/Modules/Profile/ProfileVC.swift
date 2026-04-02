@@ -34,6 +34,9 @@ class ProfileVC: UIViewController {
         profileView.logoutButton.addTarget(self, action: #selector(logoutTapped), for: .touchUpInside)
         profileView.editNameButton.addTarget(self, action: #selector(editNameTapped), for: .touchUpInside)
         profileView.editPasswordButton.addTarget(self, action:  #selector(editPasswordTapped), for: .touchUpInside)
+        profileView.ratingButton.addTarget(self, action: #selector(rateTapped), for: .touchUpInside)
+        profileView.feedbackButton.addTarget(self, action: #selector(feedbackTapped), for: .touchUpInside)
+        
     }
     
     func bindViewModel() {
@@ -142,6 +145,94 @@ class ProfileVC: UIViewController {
         let alert = UIAlertController(title: "Қате", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
+    }
+    
+    @objc func rateTapped() {
+        let alert = UIAlertController(title: "Қосымшаны бағалаңыз", message: "Сіздің бағалауыңыз бізге өте маңызды!", preferredStyle: .alert)
+        
+        let stars = ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"]
+        stars.enumerated().forEach { index, star in
+            alert.addAction(UIAlertAction(title: "\(star) - \(index + 1) жұлдыз", style: .default) { [weak self] _ in
+                self?.submitRating(index + 1)
+            })
+            
+        }
+        alert.addAction(UIAlertAction(title: "Бас тарту", style: .cancel))
+        present(alert, animated: true)
+    }
+    
+    func submitRating(_ stars: Int) {
+        guard let uid = Auth.auth().currentUser?.uid, let email = Auth.auth().currentUser?.email else { return }
+        
+        Firestore.firestore().collection("ratings").addDocument (data: [
+            "uid": uid,
+            "email": email,
+            "stars": stars,
+            "date": Date()
+        ]){ [weak self] error in
+            guard let self = self else { return }
+            let title = error == nil ? "Рахмет! 🙏" : "Қате"
+            let message = error == nil
+            ? "Сіз \(stars) жұлдыз бердіңіз. Пікіріңіз үшін рахмет!"
+            : "Бағалауды сақтау мүмкін болмады"
+            
+            DispatchQueue.main.async {
+                let ok = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                ok.addAction(UIAlertAction(title: "OK", style: .default))
+                self.present(ok, animated: true)
+            }
+        }
+        
+        
+        
+    }
+    
+    @objc func feedbackTapped() {
+        let alert = UIAlertController(
+            title: "Байланыс / Сұрақ",
+            message: "Сұрағыңызды немесе ұсынысыңызды жазыңыз",
+            preferredStyle: .alert
+        )
+
+        alert.addTextField { field in
+            field.placeholder = "Хабарламаңызды енгізіңіз..."
+        }
+
+        let sendAction = UIAlertAction(title: "Жіберу", style: .default) { [weak self] _ in
+            guard let self = self,
+                  let text = alert.textFields?.first?.text,
+                  !text.trimmingCharacters(in: .whitespaces).isEmpty else { return }
+
+            self.submitFeedback(text)
+        }
+
+        alert.addAction(UIAlertAction(title: "Бас тарту", style: .cancel))
+        alert.addAction(sendAction)
+        present(alert, animated: true)
+    }
+
+    private func submitFeedback(_ text: String) {
+        guard let uid = Auth.auth().currentUser?.uid,
+              let email = Auth.auth().currentUser?.email else { return }
+
+        Firestore.firestore().collection("feedback").addDocument(data: [
+            "uid": uid,
+            "email": email,
+            "message": text,
+            "date": Date()
+        ]) { [weak self] error in
+            guard let self = self else { return }
+            let title = error == nil ? "Рахмет! 🙏" : "Қате"
+            let message = error == nil
+                ? "Хабарламаңыз жіберілді"
+                : "Жіберу мүмкін болмады"
+
+            DispatchQueue.main.async {
+                let ok = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                ok.addAction(UIAlertAction(title: "OK", style: .default))
+                self.present(ok, animated: true)
+            }
+        }
     }
     
     
