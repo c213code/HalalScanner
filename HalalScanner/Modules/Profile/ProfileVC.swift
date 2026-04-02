@@ -148,23 +148,42 @@ class ProfileVC: UIViewController {
     }
     
     @objc func rateTapped() {
-        let alert = UIAlertController(title: "Қосымшаны бағалаңыз", message: "Сіздің бағалауыңыз бізге өте маңызды!", preferredStyle: .alert)
+        guard let uid = Auth.auth().currentUser?.uid else { return }
         
-        let stars = ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"]
-        stars.enumerated().forEach { index, star in
-            alert.addAction(UIAlertAction(title: "\(star) - \(index + 1) жұлдыз", style: .default) { [weak self] _ in
-                self?.submitRating(index + 1)
-            })
-            
-        }
-        alert.addAction(UIAlertAction(title: "Бас тарту", style: .cancel))
-        present(alert, animated: true)
+        Firestore.firestore().collection("ratings").whereField("uid", isEqualTo: uid)
+            .getDocuments { [weak self] snapshot, error in
+                guard let self = self else { return }
+                
+                DispatchQueue.main.async {
+                    if let docs = snapshot?.documents, !docs.isEmpty {
+                        let existingStars = docs.first?.data()["stars"] as? Int ?? 0
+                        let stringStars = String(repeating: "⭐", count: existingStars)
+                        let alert = UIAlertController(title: "Сіз бұрын бағаладыңыз", message: "Сіздің бағалауыңыз: \(stringStars)", preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default))
+                        self.present(alert, animated: true)
+                        return
+                    }
+                    
+                    let alert = UIAlertController(title: "Қосымшаны бағалаңыз", message: "Сіздің бағалауыңыз бізге өте маңызды!", preferredStyle: .alert)
+                    
+                    let stars = ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"]
+                    stars.enumerated().forEach { index, star in
+                        alert.addAction(UIAlertAction(title: "\(star) - \(index + 1) жұлдыз", style: .default) { [weak self] _ in
+                            self?.submitRating(index + 1)
+                        })
+                        
+                    }
+                    alert.addAction(UIAlertAction(title: "Бас тарту", style: .cancel))
+                    self.present(alert, animated: true)
+                }
+            }
+    
     }
     
     func submitRating(_ stars: Int) {
         guard let uid = Auth.auth().currentUser?.uid, let email = Auth.auth().currentUser?.email else { return }
         
-        Firestore.firestore().collection("ratings").addDocument (data: [
+        Firestore.firestore().collection("ratings").document(uid).setData([
             "uid": uid,
             "email": email,
             "stars": stars,
