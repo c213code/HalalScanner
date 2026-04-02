@@ -26,6 +26,7 @@ class FavoritesVC: UIViewController {
         navigationItem.titleView = nil
         navigationController?.navigationBar.prefersLargeTitles = true
         
+        showHintIfNeeded()
         favoritesView.collectionView.delegate = self
         favoritesView.collectionView.dataSource = self
         bindViewModel()
@@ -63,6 +64,20 @@ class FavoritesVC: UIViewController {
         
         favorites.remove(at: indexPath.item)
         favoritesView.collectionView.reloadData()
+    }
+    
+    func showHintIfNeeded() {
+        let key = "swipe"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        UserDefaults.standard.set(true, forKey: key)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            let hint = UIAlertController(title: "💡 Кеңес", message: "Элементті жою үшін оны басып ұстаңыз", preferredStyle: .alert)
+            hint.addAction(UIAlertAction(title: "Түсіндім!", style: .default))
+            self.present(hint, animated: true)
+        }
+        
+        
     }
     
 }
