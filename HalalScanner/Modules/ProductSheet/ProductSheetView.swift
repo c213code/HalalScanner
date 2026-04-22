@@ -22,6 +22,7 @@ class ProductSheetView : UIView {
        let statusValueLabel = UILabel()
        let caloriesValueLabel = UILabel()
        let categoryValueLabel = UILabel()
+       let haramItemRow = UIView()
         
 
     
@@ -55,6 +56,15 @@ class ProductSheetView : UIView {
         statusValueLabel.text     = viewModel.statusText
         caloriesValueLabel.text   = viewModel.caloriesText
         categoryValueLabel.text   = viewModel.category
+
+        if let item = viewModel.haramItem {
+            haramItemRow.isHidden = false
+            if let label = haramItemRow.subviews.compactMap({ $0 as? UILabel }).last {
+                label.text = item
+            }
+        } else {
+            haramItemRow.isHidden = true
+        }
     }
     
     
@@ -156,6 +166,51 @@ class ProductSheetView : UIView {
             grid.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16)
         ])
 
+        
+        haramItemRow.backgroundColor = UIColor.systemRed.withAlphaComponent(0.07)
+        haramItemRow.layer.cornerRadius = 10
+        haramItemRow.isHidden = true
+        haramItemRow.translatesAutoresizingMaskIntoConstraints = false
+
+        let warnIcon = UILabel()
+        warnIcon.text = "⚠️"
+        warnIcon.font = .systemFont(ofSize: 14)
+        warnIcon.translatesAutoresizingMaskIntoConstraints = false
+
+        let warnTitle = UILabel()
+        warnTitle.text = "Күмәнді қоспалары:"
+        warnTitle.font = .systemFont(ofSize: 13, weight: .semibold)
+        warnTitle.textColor = .appHaramText
+        warnTitle.translatesAutoresizingMaskIntoConstraints = false
+
+        let ingredientLabel = UILabel()
+        ingredientLabel.font = .systemFont(ofSize: 13)
+        ingredientLabel.textColor = .secondaryLabel
+        ingredientLabel.numberOfLines = 0
+        ingredientLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        haramItemRow.addSubview(warnIcon)
+        haramItemRow.addSubview(warnTitle)
+        haramItemRow.addSubview(ingredientLabel)
+        addSubview(haramItemRow)
+
+        NSLayoutConstraint.activate([
+            haramItemRow.topAnchor.constraint(equalTo: grid.bottomAnchor, constant: 12),
+            haramItemRow.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            haramItemRow.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+
+            warnIcon.leadingAnchor.constraint(equalTo: haramItemRow.leadingAnchor, constant: 12),
+            warnIcon.topAnchor.constraint(equalTo: haramItemRow.topAnchor, constant: 10),
+
+            warnTitle.leadingAnchor.constraint(equalTo: warnIcon.trailingAnchor, constant: 6),
+            warnTitle.centerYAnchor.constraint(equalTo: warnIcon.centerYAnchor),
+
+            ingredientLabel.topAnchor.constraint(equalTo: warnIcon.bottomAnchor, constant: 4),
+            ingredientLabel.leadingAnchor.constraint(equalTo: haramItemRow.leadingAnchor, constant: 12),
+            ingredientLabel.trailingAnchor.constraint(equalTo: haramItemRow.trailingAnchor, constant: -12),
+            ingredientLabel.bottomAnchor.constraint(equalTo: haramItemRow.bottomAnchor, constant: -10)
+        ])
+
         saveButton.setTitle("Сақтау", for: .normal)
         saveButton.setTitleColor(.white, for: .normal)
         saveButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .bold)
@@ -181,7 +236,7 @@ class ProductSheetView : UIView {
         addSubview(buttonStack)
 
         NSLayoutConstraint.activate([
-            buttonStack.topAnchor.constraint(equalTo: grid.bottomAnchor, constant: 26),
+            buttonStack.topAnchor.constraint(equalTo: haramItemRow.bottomAnchor, constant: 14),
             buttonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             buttonStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             buttonStack.heightAnchor.constraint(equalToConstant: 56)

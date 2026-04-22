@@ -20,8 +20,18 @@ struct Product {
     let halalStatus: HalalStatus
     let category: String
     let calories: Int
-    let haramItem: String? = nil
-    
+    let haramItem: String?
+
+    init(name: String, emoji: String, halalStatus: HalalStatus,
+         category: String, calories: Int, haramItem: String? = nil) {
+        self.name        = name
+        self.emoji       = emoji
+        self.halalStatus = halalStatus
+        self.category    = category
+        self.calories    = calories
+        self.haramItem   = haramItem
+    }
+
     var isHalal: Bool {
         return halalStatus == .halal
     }
@@ -41,14 +51,6 @@ struct ProductCatalog {
             halalStatus: .halal,
             category: "Жылдам тамақ",
             calories: 450
-        ),
-
-        "flint": Product(
-            name: "Flint",
-            emoji: "🥨",
-            halalStatus: .halal,
-            category: "Снеки",
-            calories: 365
         ),
 
         "dizzy": Product(
@@ -366,6 +368,153 @@ struct ProductCatalog {
             halalStatus: .halal,
             category: "Сүтті өнімдер",
             calories: 365
+        ),
+        "snickers": Product(
+            name: "Сникерс",
+            emoji: "🍫",
+            halalStatus: .halal,
+            category: "Тәттілер",
+            calories: 365
+        ),
+         "bueno": Product(
+            name: "Буено Киндер",
+            emoji: "🍫",
+            halalStatus: .halal,
+            category: "Тәттілер",
+            calories: 365
+        ),
+         "twix": Product(
+            name: "Твикс батончик",
+            emoji: "🍫",
+            halalStatus: .halal,
+            category: "Тәттілер",
+            calories: 365
+        ),
+         "super": Product(
+            name: "Супер Контик",
+            emoji: "🍫",
+            halalStatus: .halal,
+            category: "Тәттілер",
+            calories: 365
+        ),
+         "belvita": Product(
+            name: "Бельвита печенье",
+            emoji: "🍫",
+            halalStatus: .halal,
+            category: "Тәттілер",
+            calories: 365
+        ),
+        "chocopie": Product(
+            name: "Чоко Пай",
+            emoji: "🍫",
+            halalStatus: .haram,
+            category: "Тәттілер",
+            calories: 365,
+            haramItem: "сорбитан тристеарат, желатин, e319"
+        ),
+         "halley": Product(
+            name: "Халлей Ulker",
+            emoji: "🍫",
+            halalStatus: .halal,
+            category: "Тәттілер",
+            calories: 365
+        ),
+         "bounty": Product(
+            name: "Баунти",
+            emoji: "🍫",
+            halalStatus: .halal,
+            category: "Тәттілер",
+            calories: 365
+        ),
+         "kinder": Product(
+            name: "Киндер шоколад",
+            emoji: "🍫",
+            halalStatus: .halal,
+            category: "Тәттілер",
+            calories: 365
+        ),
+         "alpen": Product(
+            name: "Альпен Голд",
+            emoji: "🍫",
+            halalStatus: .halal,
+            category: "Тәттілер",
+            calories: 365
+        ),
+         "kaz": Product(
+            name: "Казахстан шоколад",
+            emoji: "🍫",
+            halalStatus: .halal,
+            category: "Тәттілер",
+            calories: 365
+        ),
+         "yash": Product(
+            name: "Яшкино вафли",
+            emoji: "🍫",
+            halalStatus: .doubtful,
+            category: "Тәттілер",
+            calories: 365,
+            haramItem: "сыворотка"
+        ),
+         "merci": Product(
+            name: "Мерси",
+            emoji: "🍫",
+            halalStatus: .halal,
+            category: "Тәттілер",
+            calories: 365
+        ),
+         "mini": Product(
+            name: "Мини-Рулеты Яшкино",
+            emoji: "🍫",
+            halalStatus: .doubtful,
+            category: "Тәттілер",
+            calories: 365,
+            haramItem: "кармин, сыворотка"
+
+        ),
+         "bondi": Product(
+            name: "Бонди Детское печенье",
+            emoji: "🍫",
+            halalStatus: .doubtful,
+            category: "Тәттілер",
+            calories: 365,
+            haramItem: "сыворотка"
+        ),
+         "grizzly": Product(
+            name: "Чипсы Гриззли",
+            emoji: "🥨",
+            halalStatus: .halal,
+            category: "Снэки",
+            calories: 365
+        ),
+         "grenki": Product(
+            name: "Гренки",
+            emoji: "🥨",
+            halalStatus: .halal,
+            category: "Снэки",
+            calories: 365
+        ),
+         "flint": Product(
+            name: "Флинт сухарики",
+            emoji: "🥨",
+            halalStatus: .halal,
+            category: "Снэки",
+            calories: 365
+        ),
+         "doritos": Product(
+            name: "Чипсы Доритос",
+            emoji: "🥨",
+            halalStatus: .doubtful,
+            category: "Снэки",
+            calories: 365,
+            haramItem: "инозинат натрия"
+        ),
+         "lays": Product(
+            name: "Чипсы Lays",
+            emoji: "🥨",
+            halalStatus: .doubtful,
+            category: "Снэки",
+            calories: 365,
+            haramItem: "ракообразные добавки"
         ),
     ]
 }

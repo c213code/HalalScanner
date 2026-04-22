@@ -47,6 +47,7 @@ class ProductSheetViewModel {
 
       
       var halalStatus: HalalStatus { product.halalStatus }
+      var haramItem: String? { product.haramItem }
     var isHalal: Bool {
         switch product.halalStatus {
         case .halal:
