@@ -26,8 +26,11 @@ class HistoryViewModel : ObservableObject {
             .collection("items")
             .order(by: "date", descending: true)
             .getDocuments { [weak self] snapshot, error in
-                self?.isLoading = false
-                self?.scans = snapshot?.documents.map { $0.data() } ?? []
+                let result = snapshot?.documents.map { $0.data() } ?? []
+                DispatchQueue.main.async {
+                    self?.isLoading = false
+                    self?.scans = result
+                }
             }
         
     }

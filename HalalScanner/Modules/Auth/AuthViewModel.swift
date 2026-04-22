@@ -37,34 +37,39 @@ class AuthViewModel: ObservableObject {
     func login(completion: @escaping (Result<Void, Error>) -> Void) {
         isLoading = true
         Auth.auth().signIn(withEmail: email, password: password) { [weak self] _, error in
-            self?.isLoading = false
-            if let error = error {
-                self?.handleError(error)
-                self?.errorMessage = error.localizedDescription
-                completion(.failure(error))
-            } else {
-                completion(.success(()))
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                if let error = error {
+                    self?.handleError(error)
+                    completion(.failure(error))
+                } else {
+                    completion(.success(()))
+                }
             }
         }
     }
-    
+
     func register(completion: @escaping (Result<Void, Error>) -> Void) {
         isLoading = true
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
-            self?.isLoading = false
-            if let error = error {
-                self?.handleError(error)
-                self?.errorMessage = error.localizedDescription
-                completion(.failure(error))
-            } else {
-                self?.saveUserToFirestore(userId: result?.user.uid ?? "", email: self?.email ?? "", completion: completion)
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                if let error = error {
+                    self?.handleError(error)
+                    completion(.failure(error))
+                } else {
+                    self?.saveUserToFirestore(userId: result?.user.uid ?? "", email: self?.email ?? "", completion: completion)
+                }
             }
         }
     }
     func saveUserToFirestore(userId: String, email: String, completion: @escaping (Result<Void, Error>) -> Void) {
         let db = Firestore.firestore()
         let role = email == "admin@halal.com" ? "admin" : "user"
-        
+
+        // Persist role locally so the app shows the right UI immediately on next launch
+        UserDefaults.standard.set(role, forKey: "userRole")
+
         db.collection("users").document(userId).setData([
             "email": email,
             "name": "Пайдаланушы",
@@ -75,7 +80,7 @@ class AuthViewModel: ObservableObject {
             } else {
                 completion(.success(()))
             }
-            }
+        }
     }
     
     func handleError(_ error: Error) {

@@ -5,7 +5,6 @@
 //  Created by Yerasyl Toleubek on 30.03.2026.
 //
 import Foundation
-import UIKit
 import Combine
 import FirebaseAuth
 import Firebase
@@ -37,52 +36,23 @@ class ScannerViewModel {
         }
     }
     
-    func detect(image: UIImage) {
+    // Called by ViewController before running detection (UIKit stays in VC layer)
+    func beginDetection() {
         guard !isDetecting else { return }
-        
-        let foodModel = ModelManager.shared.getModel(named: "food")
-        let dairyModel = ModelManager.shared.getModel(named: "dairy")
-        
-        guard foodModel != nil && dairyModel != nil else {
-            statusText = "Model not loaded"
-            return
-        }
-        
         isDetecting = true
-        statusText = "Searching..."
-        
-        var bestLabel: String?
-        var bestConfidence: Int = 0
-        let group = DispatchGroup()
+        statusText = "Іздеуде..."
+    }
 
-        for model in [foodModel, dairyModel].compactMap({ $0 }) {
-            group.enter()
-            
-            model.detect(image: image) { predictions, _ in
-                if let first = predictions?.first {
-                    let values = first.getValues()
-                    let label = (values["class"] as? String ?? "").lowercased()
-                    let confidence = Int(((values["confidence"] as? NSNumber)?.doubleValue ?? 0) * 100)
-                    if confidence > bestConfidence{
-                        bestLabel = label
-                        bestConfidence = confidence
-                    }
-                }
-                group.leave()
-            }
-          
-        }
-        group.notify(queue: .main) { [weak self] in
-            guard let self = self else { return }
-            self.isDetecting = false
-            if let label = bestLabel, let product = ProductCatalog.products[label] {
-                self.statusText = "Detected: \(product.emoji) \(product.name) \(bestConfidence)%"
-                self.autoSave(product: product, confidence: bestConfidence)
-                self.detectedProduct = (product, bestConfidence)
-            } else {
-                self.statusText = "No Food Detected ❌"
-                self.detectedProduct = nil
-            }
+    // Called by ViewController once detection is complete
+    func handleResult(label: String?, confidence: Int) {
+        isDetecting = false
+        if let label = label, let product = ProductCatalog.products[label] {
+            statusText = "Табылды: \(product.emoji) \(product.name) \(confidence)%"
+            autoSave(product: product, confidence: confidence)
+            detectedProduct = (product, confidence)
+        } else {
+            statusText = "Тағам табылмады ❌"
+            detectedProduct = nil
         }
     }
     

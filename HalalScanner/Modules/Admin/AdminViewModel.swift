@@ -5,7 +5,7 @@
 //  Created by Yerasyl Toleubek on 04.04.2026.
 //
 
-import UIKit
+import Foundation
 import Combine
 import FirebaseFirestore
 
