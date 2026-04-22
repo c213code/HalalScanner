@@ -5,7 +5,7 @@
 //  Created by Yerasyl Toleubek on 30.03.2026.
 //
 
-import UIKit
+import Foundation
 import FirebaseAuth
 import FirebaseFirestore
 
@@ -45,49 +45,8 @@ class ProductSheetViewModel {
           }
       }
 
-      var halalTextColor: UIColor {
-          switch product.halalStatus {
-          case .halal:
-              return .systemGreen
-          case .haram:
-              return .systemRed
-          case .doubtful:
-              return .systemOrange
-          }
-      }
-
-      var halalBackgroundColor: UIColor {
-          switch product.halalStatus {
-          case .halal:
-              return UIColor.green.withAlphaComponent(0.3)
-          case .haram:
-              return UIColor.red.withAlphaComponent(0.3)
-          case .doubtful:
-              return UIColor.orange.withAlphaComponent(0.3)
-          }
-      }
-
-      var emojiBackgroundColor: UIColor {
-          switch product.halalStatus {
-          case .halal:
-              return .appCardGreen
-          case .haram:
-              return .appCardRed
-          case .doubtful:
-              return UIColor.systemOrange.withAlphaComponent(0.2)
-          }
-      }
-
-      var statusTextColor: UIColor {
-          switch product.halalStatus {
-          case .halal:
-              return UIColor.appGreen
-          case .haram:
-              return .systemRed
-          case .doubtful:
-              return .systemOrange
-          }
-      }
+      // Color mapping lives in the View layer (ProductSheetView)
+      var halalStatus: HalalStatus { product.halalStatus }
     var isHalal: Bool {
         switch product.halalStatus {
         case .halal:
