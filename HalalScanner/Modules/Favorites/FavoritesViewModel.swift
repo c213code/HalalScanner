@@ -23,12 +23,15 @@ class FavoritesViewModel : ObservableObject {
                     print("FAVORITES ERROR:", error.localizedDescription)
                 }
                 print("FAVORITES COUNT:", snapshot?.documents.count ?? 0)
-                self?.isLoading = false
-                self?.favorites = snapshot?.documents.map { doc in
+                let result = snapshot?.documents.map { doc -> [String: Any] in
                     var data = doc.data()
                     data["documentId"] = doc.documentID
                     return data
                 } ?? []
+                DispatchQueue.main.async {
+                    self?.isLoading = false
+                    self?.favorites = result
+                }
             }
     }
 }
