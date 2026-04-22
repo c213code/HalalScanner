@@ -25,7 +25,7 @@ class AdminView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .systemGray6
+        backgroundColor = .appBackground
         setupScrollView()
         setupHeader()
         setupStatCards()
@@ -71,7 +71,7 @@ class AdminView: UIView {
         ])
         
         let avatar = UIView()
-        avatar.backgroundColor = UIColor.white.withAlphaComponent(0.25)
+        avatar.backgroundColor = .appHeaderOverlay
         avatar.translatesAutoresizingMaskIntoConstraints = false
         avatar.layer.cornerRadius = 28
         headerCard.addSubview(avatar)
@@ -93,7 +93,7 @@ class AdminView: UIView {
         let emailLabel = UILabel()
         emailLabel.text = "admin@halal.com"
         emailLabel.font = .systemFont(ofSize: 14)
-        emailLabel.textColor = UIColor.white.withAlphaComponent(0.8)
+        emailLabel.textColor = .appHeaderSubtext
         emailLabel.translatesAutoresizingMaskIntoConstraints = false
         headerCard.addSubview(emailLabel)
         
@@ -134,15 +134,15 @@ class AdminView: UIView {
             value: "-",
             label: "Пайдаланушы",
             valueColor: .white,
-            labelColor: UIColor.white.withAlphaComponent(0.7),
-            bgColor:  UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1),
+            labelColor: .appHeaderMutedText,
+            bgColor:  .appDarkCard,
             valueLabel: userValueLabel
         )
         let ratingCard = makeStatCard(
             value: "-",
             label: "Орт. баға",
             valueColor: UIColor.appGreen,
-            labelColor: UIColor.appGreen.withAlphaComponent(0.7),
+            labelColor: .appGreenMuted,
             bgColor:  UIColor.appCardGreen,
             valueLabel: avrRatingLabel
         )
@@ -150,8 +150,8 @@ class AdminView: UIView {
             value: "-",
             label: "Пікір",
             valueColor: UIColor.systemBlue,
-            labelColor: UIColor.systemBlue.withAlphaComponent(0.7),
-            bgColor:  UIColor.systemBlue.withAlphaComponent(0.08),
+            labelColor: .appBlueMuted,
+            bgColor:  .appBlueFaint,
             valueLabel: totalFeedbackLabel
         )
         
@@ -283,7 +283,7 @@ class AdminView: UIView {
     }
     func makeRatingRow(email: String, date: String, stars: Int, isLast: Bool) -> UIView {
         let row = UIView()
-        row.backgroundColor = .white
+        row.backgroundColor = .appSurface
         row.translatesAutoresizingMaskIntoConstraints = false
         
         let avatar = makeAvatar(email: email)
@@ -348,7 +348,7 @@ class AdminView: UIView {
     
     func makeFeedbackRow(email: String, date: String, message: String, isLast: Bool) -> UIView {
         let row = UIView()
-        row.backgroundColor = .white
+        row.backgroundColor = .appSurface
         row.translatesAutoresizingMaskIntoConstraints = false
 
         let avatar = makeAvatar(email: email)
@@ -452,7 +452,7 @@ class AdminView: UIView {
     }
     private func makeEmptyRow(_ text: String) -> UIView {
         let row = UIView()
-        row.backgroundColor = .white
+        row.backgroundColor = .appSurface
         row.heightAnchor.constraint(equalToConstant: 50).isActive = true
         let label = UILabel()
         label.text = text

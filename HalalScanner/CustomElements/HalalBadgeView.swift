@@ -31,6 +31,7 @@ class HalalBadgeView: UIView {
         
         halalBadge.font = .systemFont(ofSize: 15, weight: .bold)
         halalBadge.textAlignment = .center
+        halalBadge.numberOfLines = 0
         halalBadge.translatesAutoresizingMaskIntoConstraints = false
         
         addSubview(halalBadge)
@@ -47,7 +48,7 @@ class HalalBadgeView: UIView {
     
     func configure(isHalal: Bool) {
         halalBadge.text = isHalal ? "Халал" : "Халал емес"
-        halalBadge.textColor = isHalal ? .systemGreen : .systemRed
-        backgroundColor = isHalal ? UIColor.green.withAlphaComponent(0.3) : UIColor.red.withAlphaComponent(0.3)
+        halalBadge.textColor = isHalal ? .appHalalText : .appHaramText
+        backgroundColor = isHalal ? .appHalalBadge : .appHaramBadge
     }
 }

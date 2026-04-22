@@ -33,7 +33,7 @@ class AuthView: UIView {
     
     
     func setupView() {
-        backgroundColor = .white
+        backgroundColor = .appSurface
     
         iconLabel.text = "🔑"
         iconLabel.font = .systemFont(ofSize: 54, weight: .bold)
@@ -75,7 +75,7 @@ class AuthView: UIView {
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         
         emailField.placeholder = "Email"
-        emailField.backgroundColor = .systemGray6
+        emailField.backgroundColor = .appBackground
         emailField.autocapitalizationType = .none
         emailField.keyboardType = .emailAddress
         emailField.layer.cornerRadius = 10
@@ -85,7 +85,7 @@ class AuthView: UIView {
         emailField.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         passwordFiled.placeholder = "Password"
-        passwordFiled.backgroundColor = .systemGray6
+        passwordFiled.backgroundColor = .appBackground
         passwordFiled.layer.cornerRadius = 10
         passwordFiled.autocapitalizationType = .none
         passwordFiled.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 12, height: 0))
@@ -112,7 +112,7 @@ class AuthView: UIView {
         loginButton.isEnabled = false
         
         registerButton.setTitle("Тіркелу", for: .normal)
-        registerButton.backgroundColor = .white
+        registerButton.backgroundColor = .appSurface
         registerButton.layer.borderWidth = 1.5
         registerButton.layer.borderColor = UIColor.appGreen.cgColor
         registerButton.layer.cornerRadius = 10

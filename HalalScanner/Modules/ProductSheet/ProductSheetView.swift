@@ -33,23 +33,29 @@ class ProductSheetView : UIView {
         fatalError()
     }
     func configure(with viewModel: ProductSheetViewModel) {
-           emojiLabel.text = viewModel.emoji
-           nameLabel.text = viewModel.name
-           categoryLabel.text = viewModel.category
+        emojiLabel.text = viewModel.emoji
+        nameLabel.text  = viewModel.name
+        categoryLabel.text = viewModel.category
+        halalBadge.configure(isHalal: viewModel.isHalal)
 
-//           halalLabel.text = viewModel.halalTitle
-//           halalLabel.textColor = viewModel.halalTextColor
-//           halalBackground.backgroundColor = viewModel.halalBackgroundColor
-        
-            halalBadge.configure(isHalal:  viewModel.isHalal)
-           emojiContainer.backgroundColor = viewModel.emojiBackgroundColor
+        // Color mapping belongs in the View layer
+        switch viewModel.halalStatus {
+        case .halal:
+            emojiContainer.backgroundColor  = .appCardGreen
+            statusValueLabel.textColor       = .appGreen
+        case .haram:
+            emojiContainer.backgroundColor  = .appCardRed
+            statusValueLabel.textColor       = .appHaramText
+        case .doubtful:
+            emojiContainer.backgroundColor  = .appOrangeSubtle
+            statusValueLabel.textColor       = .systemOrange
+        }
 
-           confidenceValueLabel.text = viewModel.confidenceText
-           statusValueLabel.text = viewModel.statusText
-           statusValueLabel.textColor = viewModel.statusTextColor
-           caloriesValueLabel.text = viewModel.caloriesText
-           categoryValueLabel.text = viewModel.category
-       }
+        confidenceValueLabel.text = viewModel.confidenceText
+        statusValueLabel.text     = viewModel.statusText
+        caloriesValueLabel.text   = viewModel.caloriesText
+        categoryValueLabel.text   = viewModel.category
+    }
     
     
     func setupUI() {

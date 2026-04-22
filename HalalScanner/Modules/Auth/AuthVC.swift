@@ -55,7 +55,7 @@ class AuthVC: UIViewController {
             switch result {
             case .success:
                 DispatchQueue.main.async {
-                    self?.coordinator?.showMain() 
+                    self?.coordinator?.fetchRoleAndShowMain() 
                 }
             case .failure(let error):
                 break
@@ -70,7 +70,7 @@ class AuthVC: UIViewController {
             switch result {
             case .success:
                 DispatchQueue.main.async {
-                    self?.coordinator?.showMain()
+                    self?.coordinator?.fetchRoleAndShowMain()
                 }
             case .failure(let error):
                 break

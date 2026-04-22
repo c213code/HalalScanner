@@ -33,7 +33,7 @@ class ScanCell: UITableViewCell {
     func setupUI() {
         
         backgroundColor = .clear
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .appSurface
         contentView.layer.cornerRadius = 18
         contentView.layer.masksToBounds = true
         

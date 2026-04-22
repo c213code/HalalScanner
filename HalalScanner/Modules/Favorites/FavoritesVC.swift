@@ -21,7 +21,7 @@ class FavoritesVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGray6
+        view.backgroundColor = .appBackground
         title = "Сақталған"
         navigationItem.titleView = nil
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -42,11 +42,19 @@ class FavoritesVC: UIViewController {
     
     
     func bindViewModel() {
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] loading in
+                if loading { self?.favoritesView.showLoading() }
+            }
+            .store(in: &cancellables)
+
         viewModel.$favorites
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
                 self?.favorites = items
                 self?.favoritesView.collectionView.reloadData()
+                self?.favoritesView.showContent(isEmpty: items.isEmpty)
             }
             .store(in: &cancellables)
     }
