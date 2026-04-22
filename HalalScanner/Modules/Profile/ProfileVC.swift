@@ -56,6 +56,7 @@ class ProfileVC: UIViewController {
         
         viewModel.$totalScans
             .combineLatest(viewModel.$halalScans, viewModel.$haramScans)
+            .dropFirst()                      // skip the initial (0,0,0) before Firestore responds
             .receive(on: DispatchQueue.main)
             .sink { [weak self] total, halal, haram in
                 self?.profileView.setupStatus(total: total, halal: halal, haram: haram)
