@@ -36,14 +36,14 @@ class ScannerViewModel {
         }
     }
     
-    // Called by ViewController before running detection (UIKit stays in VC layer)
+    
     func beginDetection() {
         guard !isDetecting else { return }
         isDetecting = true
         statusText = "Іздеуде..."
     }
 
-    // Called by ViewController once detection is complete
+    
     func handleResult(label: String?, confidence: Int) {
         isDetecting = false
         if let label = label, let product = ProductCatalog.products[label] {

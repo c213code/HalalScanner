@@ -11,11 +11,11 @@ import FirebaseAuth
 
 class ProfileView : UIView {
 
-    // MARK: – Scroll
+    
     let scrollView  = UIScrollView()
     let contentView = UIView()
 
-    // MARK: – Subviews
+    
     let avatarLabel = UILabel()
     let nameLabel = UILabel()
     let roleBage = UILabel()
@@ -28,7 +28,7 @@ class ProfileView : UIView {
     let progressTitleLabel = UILabel()
     var progressWidthConstraint: NSLayoutConstraint?
 
-    // Stat card value labels — updated in-place, cards built once
+    
     private let totalValueLabel  = UILabel()
     private let halalValueLabel  = UILabel()
     private let haramValueLabel  = UILabel()
@@ -49,7 +49,7 @@ class ProfileView : UIView {
     }
     required init?(coder: NSCoder) { fatalError() }
 
-    // MARK: – Scroll container
+    
     func setupScrollView() {
         scrollView.translatesAutoresizingMaskIntoConstraints  = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -71,7 +71,7 @@ class ProfileView : UIView {
         ])
     }
 
-    // MARK: – Stat cards (built once)
+    
     func buildStatCards() {
         let totalCard = makeStatCard(valueLabel: totalValueLabel, label: "Барлығы",
                                      valueColor: .systemGray, labelColor: .systemGray3,
@@ -92,7 +92,7 @@ class ProfileView : UIView {
         horizontalStackForCounters.translatesAutoresizingMaskIntoConstraints = false
     }
 
-    // Just update labels — no layout changes
+    
     func setupStatus(total: Int, halal: Int, haram: Int) {
         totalValueLabel.text = "\(total)"
         halalValueLabel.text = "\(halal)"
@@ -130,7 +130,7 @@ class ProfileView : UIView {
         return card
     }
 
-    // MARK: – Header
+    
     func setupHeader() {
         profileCard.backgroundColor = UIColor.appGreen
         profileCard.layer.cornerRadius = 16
@@ -144,7 +144,7 @@ class ProfileView : UIView {
             profileCard.heightAnchor.constraint(equalToConstant: 105)
         ])
 
-        // Avatar circle
+        
         let avatar = UIView()
         avatar.backgroundColor = .appHeaderOverlay
         avatar.layer.cornerRadius = 33
@@ -204,7 +204,7 @@ class ProfileView : UIView {
             roleBage.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 6)
         ])
 
-        // Stat counters row — build cards once
+        
         buildStatCards()
         contentView.addSubview(horizontalStackForCounters)
         NSLayoutConstraint.activate([
@@ -236,7 +236,7 @@ class ProfileView : UIView {
         ])
     }
 
-    // MARK: – Progress card
+    
     func setupProgressCard() {
         progressCard.backgroundColor = .appSurface
         progressCard.layer.cornerRadius = 14
@@ -291,7 +291,7 @@ class ProfileView : UIView {
         progressWidthConstraint?.isActive = true
     }
 
-    // MARK: – Generic two-row card
+    
     func createSupportCard(below anchorView: UIView, sectionText: String,
                             card: UIView, row1: UIView, row2: UIView) -> UIView {
         let sectionLabel = UILabel()
@@ -359,7 +359,7 @@ class ProfileView : UIView {
                           card: supportCard, row1: ratingRow, row2: feedbackRow)
     }
 
-    // MARK: – Row builder
+    
     func makeAccountRow(title: String, icon: String,
                         iconBackgroundColor: UIColor, button: UIButton) -> UIView {
         let row = UIView()
@@ -423,10 +423,10 @@ class ProfileView : UIView {
         return row
     }
 
-    // MARK: – Progress update
+    
     func updateProgress(total: Int, halal: Int) {
-        guard total > 0 else { return }   // skip initial (0,0) emission
-
+        guard total > 0 else { return }
+        
         let percent    = CGFloat(halal) / CGFloat(total)
         let percentInt = Int(percent * 100)
 
@@ -435,7 +435,7 @@ class ProfileView : UIView {
         progressLabel.textColor     = color
         progressBar.backgroundColor = color
 
-        layoutIfNeeded()   // flush pending layout so bounds are correct
+        layoutIfNeeded()   
         let fullWidth = progressCard.bounds.width - 32
         progressWidthConstraint?.constant = fullWidth * percent
 

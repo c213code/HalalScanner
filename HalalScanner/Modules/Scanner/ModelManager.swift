@@ -11,7 +11,7 @@ class ModelManager {
 
     private let rf = RoboflowMobile(apiKey: Secrets.roboflowKey)
 
-    // Dairy products model (-tv4zs, version 8)
+    
     private let projectID = "-tv4zs"
     private let projectVersion = 8
 

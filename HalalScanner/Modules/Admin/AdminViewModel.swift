@@ -16,53 +16,63 @@ class AdminViewModel: ObservableObject {
     @Published var avarageRating: Double = 0.0
     @Published var totalUsers: Int = 0
     @Published var totalFeedbacks: Int = 0
-    
+
     var cancellables = Set<AnyCancellable>()
-    
+
     func fetchData() {
-        isLoading = true
+        DispatchQueue.main.async { self.isLoading = true }
         let group = DispatchGroup()
-        
+
+        // Users count
         group.enter()
         Firestore.firestore().collection("users").getDocuments { [weak self] snapshot, _ in
-            self?.totalUsers = snapshot?.documents.count ?? 0
+            let count = snapshot?.documents.count ?? 0
+            DispatchQueue.main.async { self?.totalUsers = count }
             group.leave()
         }
-        
+
+        // Ratings
         group.enter()
         Firestore.firestore().collection("ratings")
             .order(by: "date", descending: true)
             .getDocuments { [weak self] snapshot, _ in
                 let docs = snapshot?.documents ?? []
-                
-                let allStars = docs.compactMap { $0.data()["stars"] as? Int}
+                let allStars = docs.compactMap { $0.data()["stars"] as? Int }
                 let avg = allStars.isEmpty ? 0.0 : Double(allStars.reduce(0, +)) / Double(allStars.count)
-                self?.avarageRating = (avg*10).rounded() / 10
-                
-                self?.recentRatings = docs.prefix(5).map { doc in
+                let rounded = (avg * 10).rounded() / 10
+                let recent = docs.prefix(5).map { doc -> [String: Any] in
                     var data = doc.data()
                     data["documentId"] = doc.documentID
                     return data
                 }
+                DispatchQueue.main.async {
+                    self?.avarageRating = rounded
+                    self?.recentRatings = recent
+                }
                 group.leave()
             }
+
+        // Feedbacks
         group.enter()
-        Firestore.firestore().collection("feedbac")
+        Firestore.firestore().collection("feedback")
             .order(by: "date", descending: true)
             .getDocuments { [weak self] snapshot, _ in
                 let docs = snapshot?.documents ?? []
-                self?.totalFeedbacks = docs.count
-                self?.recentFeedbacks = docs.prefix(5).map { doc in
+                let recent = docs.prefix(5).map { doc -> [String: Any] in
                     var data = doc.data()
                     data["documentId"] = doc.documentID
                     return data
                 }
-                group.leave()
-                group.notify(queue: .main) { [weak self] in
-                    self?.isLoading = false
+                DispatchQueue.main.async {
+                    self?.totalFeedbacks = docs.count
+                    self?.recentFeedbacks = recent
                 }
+                group.leave()
             }
 
+        // All done
+        group.notify(queue: .main) { [weak self] in
+            self?.isLoading = false
+        }
     }
 }
-

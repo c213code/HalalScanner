@@ -8,21 +8,22 @@
 import UIKit
 import FirebaseFirestore
 
-
 class AdminView: UIView {
-    
-    let scrollView = UIScrollView()
-    let contentView = UIView()
-    
-    let headerCard = UIView()
-    
-    let userValueLabel = UILabel()
-    let avrRatingLabel = UILabel()
+
+    let scrollView   = UIScrollView()
+    let contentView  = UIView()
+    let headerCard   = UIView()
+
+    let userValueLabel    = UILabel()
+    let avrRatingLabel    = UILabel()
     let totalFeedbackLabel = UILabel()
-    
-    let ratingStack = UIStackView()
+
+    let ratingStack   = UIStackView()
     let feedbackStack = UIStackView()
-    
+
+    // Stored anchor for stat stack so sections can chain off it
+    private var statStack: UIStackView!
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .appBackground
@@ -31,25 +32,23 @@ class AdminView: UIView {
         setupStatCards()
         setupRatingSection()
         setupFeedbackSection()
-        
     }
-    required init?(coder: NSCoder) {
-        fatalError()
-    }
-    
+    required init?(coder: NSCoder) { fatalError() }
+
+    // MARK: – Scroll
+
     func setupScrollView() {
-        
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.translatesAutoresizingMaskIntoConstraints  = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scrollView)
         scrollView.addSubview(contentView)
-        
+
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
+
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
@@ -57,143 +56,134 @@ class AdminView: UIView {
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
     }
-    
+
+    // MARK: – Header card
+
     func setupHeader() {
         headerCard.backgroundColor = UIColor.appGreen
         headerCard.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(headerCard)
-        
+
         NSLayoutConstraint.activate([
             headerCard.topAnchor.constraint(equalTo: contentView.topAnchor),
             headerCard.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             headerCard.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             headerCard.heightAnchor.constraint(equalToConstant: 90)
         ])
-        
+
         let avatar = UIView()
         avatar.backgroundColor = .appHeaderOverlay
-        avatar.translatesAutoresizingMaskIntoConstraints = false
         avatar.layer.cornerRadius = 28
+        avatar.translatesAutoresizingMaskIntoConstraints = false
         headerCard.addSubview(avatar)
-        
+
         let avatarLabel = UILabel()
         avatarLabel.text = "A"
         avatarLabel.font = .systemFont(ofSize: 22, weight: .bold)
         avatarLabel.textColor = .white
         avatarLabel.translatesAutoresizingMaskIntoConstraints = false
         avatar.addSubview(avatarLabel)
-        
+
         let titleLabel = UILabel()
         titleLabel.text = "Админ панельі"
         titleLabel.textColor = .white
         titleLabel.font = .systemFont(ofSize: 20, weight: .bold)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         headerCard.addSubview(titleLabel)
-        
+
         let emailLabel = UILabel()
         emailLabel.text = "admin@halal.com"
         emailLabel.font = .systemFont(ofSize: 14)
         emailLabel.textColor = .appHeaderSubtext
         emailLabel.translatesAutoresizingMaskIntoConstraints = false
         headerCard.addSubview(emailLabel)
-        
+
         NSLayoutConstraint.activate([
             avatar.centerYAnchor.constraint(equalTo: headerCard.centerYAnchor),
             avatar.leadingAnchor.constraint(equalTo: headerCard.leadingAnchor, constant: 16),
             avatar.widthAnchor.constraint(equalToConstant: 56),
             avatar.heightAnchor.constraint(equalToConstant: 56),
-            
+
             avatarLabel.centerXAnchor.constraint(equalTo: avatar.centerXAnchor),
             avatarLabel.centerYAnchor.constraint(equalTo: avatar.centerYAnchor),
-            
-            titleLabel.topAnchor.constraint(equalTo: headerCard.topAnchor, constant: 4),
-            titleLabel.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 14),
-            
-            emailLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+
+            titleLabel.topAnchor.constraint(equalTo: headerCard.topAnchor, constant: 18),
             titleLabel.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 14),
 
+            emailLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+            emailLabel.leadingAnchor.constraint(equalTo: avatar.trailingAnchor, constant: 14)
         ])
     }
-    
+
+    // MARK: – Stat cards
+
     func setupStatCards() {
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.spacing = 10
-        stack.translatesAutoresizingMaskIntoConstraints = false
         stack.distribution = .fillEqually
+        stack.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(stack)
-        
+        statStack = stack
+
+        // ✅ bottomAnchor, not topAnchor
         NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(equalTo: headerCard.topAnchor, constant: 16),
+            stack.topAnchor.constraint(equalTo: headerCard.bottomAnchor, constant: 16),
             stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             stack.heightAnchor.constraint(equalToConstant: 90)
         ])
-        
-        let userCard = makeStatCard(
-            value: "-",
-            label: "Пайдаланушы",
-            valueColor: .white,
-            labelColor: .appHeaderMutedText,
-            bgColor:  .appDarkCard,
-            valueLabel: userValueLabel
-        )
-        let ratingCard = makeStatCard(
-            value: "-",
-            label: "Орт. баға",
-            valueColor: UIColor.appGreen,
-            labelColor: .appGreenMuted,
-            bgColor:  UIColor.appCardGreen,
-            valueLabel: avrRatingLabel
-        )
-        let feedbackCard = makeStatCard(
-            value: "-",
-            label: "Пікір",
-            valueColor: UIColor.systemBlue,
-            labelColor: .appBlueMuted,
-            bgColor:  .appBlueFaint,
-            valueLabel: totalFeedbackLabel
-        )
-        
-        stack.addSubview(userCard)
-        stack.addSubview(ratingCard)
-        stack.addSubview(feedbackCard)
-        
+
+        let userCard = makeStatCard(value: "-", label: "Пайдаланушы",
+                                    valueColor: .white, labelColor: .appHeaderMutedText,
+                                    bgColor: .appDarkCard, valueLabel: userValueLabel)
+        let ratingCard = makeStatCard(value: "-", label: "Орт. баға",
+                                      valueColor: .appGreen, labelColor: .appGreenMuted,
+                                      bgColor: .appCardGreen, valueLabel: avrRatingLabel)
+        let feedbackCard = makeStatCard(value: "-", label: "Пікір",
+                                        valueColor: .systemBlue, labelColor: .appBlueMuted,
+                                        bgColor: .appBlueFaint, valueLabel: totalFeedbackLabel)
+
+        // ✅ addArrangedSubview for stack views
+        stack.addArrangedSubview(userCard)
+        stack.addArrangedSubview(ratingCard)
+        stack.addArrangedSubview(feedbackCard)
     }
-    
-    func makeStatCard(value: String, label: String, valueColor: UIColor, labelColor: UIColor, bgColor: UIColor, valueLabel: UILabel) -> UIView{
+
+    func makeStatCard(value: String, label: String,
+                      valueColor: UIColor, labelColor: UIColor,
+                      bgColor: UIColor, valueLabel: UILabel) -> UIView {
         let card = UIView()
         card.backgroundColor = bgColor
         card.layer.cornerRadius = 16
         card.translatesAutoresizingMaskIntoConstraints = false
-        
+
         valueLabel.text = value
-        valueLabel.textColor =  valueColor
+        valueLabel.textColor = valueColor
         valueLabel.textAlignment = .center
         valueLabel.font = .systemFont(ofSize: 28, weight: .heavy)
         valueLabel.translatesAutoresizingMaskIntoConstraints = false
-        
+        card.addSubview(valueLabel)
+
         let labelText = UILabel()
         labelText.text = label
         labelText.textColor = labelColor
         labelText.font = .systemFont(ofSize: 13, weight: .medium)
         labelText.textAlignment = .center
         labelText.translatesAutoresizingMaskIntoConstraints = false
-        
-        card.addSubview(valueLabel)
         card.addSubview(labelText)
-        
+
         NSLayoutConstraint.activate([
             valueLabel.centerXAnchor.constraint(equalTo: card.centerXAnchor),
             valueLabel.topAnchor.constraint(equalTo: card.topAnchor, constant: 16),
-            
             labelText.centerXAnchor.constraint(equalTo: card.centerXAnchor),
             labelText.topAnchor.constraint(equalTo: valueLabel.bottomAnchor, constant: 6)
         ])
-        
         return card
     }
-    
+
+    // MARK: – Sections
+
     func makeSectionLabel(_ text: String) -> UILabel {
         let label = UILabel()
         label.text = text
@@ -202,71 +192,73 @@ class AdminView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }
-    
+
     func setupRatingSection() {
         let label = makeSectionLabel("БАҒАЛАУЛАР")
-        
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: contentView.subviews[2].bottomAnchor, constant: 24),
-            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20)
-        ])
-        
+        contentView.addSubview(label)   // ✅ must add before activating constraints
+
         ratingStack.axis = .vertical
         ratingStack.spacing = 0
         ratingStack.layer.cornerRadius = 14
         ratingStack.clipsToBounds = true
         ratingStack.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(ratingStack)
-        
+
         NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: statStack.bottomAnchor, constant: 24),
+            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+
             ratingStack.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
             ratingStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             ratingStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
         ])
     }
+
     func setupFeedbackSection() {
         let label = makeSectionLabel("ПІКІРЛЕР")
-        
-        NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: ratingStack.bottomAnchor, constant: 24),
-            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20)
-        ])
-        
+        contentView.addSubview(label)   // ✅ must add before activating constraints
+
         feedbackStack.axis = .vertical
         feedbackStack.spacing = 0
         feedbackStack.layer.cornerRadius = 14
         feedbackStack.clipsToBounds = true
         feedbackStack.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(feedbackStack)
-        
+
         NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: ratingStack.bottomAnchor, constant: 24),
+            label.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+
             feedbackStack.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 8),
             feedbackStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             feedbackStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            feedbackStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -100)
+            feedbackStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -32)
         ])
     }
-    
+
+    // MARK: – Update data
+
     func updateStats(users: Int, avgRating: Double, feedbacks: Int) {
-        userValueLabel.text = "\(users)"
-        avrRatingLabel.text = avgRating == 0 ? "-" :  String(format: "%.1f", avgRating)
-        totalFeedbackLabel.text = "\(feedbacks)"
+        userValueLabel.text      = "\(users)"
+        avrRatingLabel.text      = avgRating == 0 ? "-" : String(format: "%.1f", avgRating)
+        totalFeedbackLabel.text  = "\(feedbacks)"
     }
-    func updateRatings(_ ratings: [[String: Any]]){
+
+    func updateRatings(_ ratings: [[String: Any]]) {
         ratingStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         guard !ratings.isEmpty else {
             ratingStack.addArrangedSubview(makeEmptyRow("Бағалаулар жоқ"))
             return
         }
         ratings.enumerated().forEach { index, rating in
-            let email = rating["email"] as? String ?? "-"
-            let starts = rating["stars"] as? Int ?? 0
-            let date = formatDate(value: rating["date"])
+            let email  = rating["email"]  as? String ?? "-"
+            let stars  = rating["stars"]  as? Int    ?? 0
+            let date   = formatDate(value: rating["date"])
             let isLast = index == ratings.count - 1
-            ratingStack.addArrangedSubview(makeRatingRow(email: email, date: date, stars: starts, isLast: isLast))
-
+            ratingStack.addArrangedSubview(makeRatingRow(email: email, date: date, stars: stars, isLast: isLast))
         }
     }
+
     func updateFeedbacks(_ feedbacks: [[String: Any]]) {
         feedbackStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         guard !feedbacks.isEmpty else {
@@ -274,54 +266,45 @@ class AdminView: UIView {
             return
         }
         feedbacks.enumerated().forEach { index, feedback in
-            let email = feedback["email"] as? String ?? "—"
+            let email   = feedback["email"]   as? String ?? "—"
             let message = feedback["message"] as? String ?? "—"
-            let date = formatDate(value: feedback["date"])
-            let isLast = index == feedbacks.count - 1
+            let date    = formatDate(value: feedback["date"])
+            let isLast  = index == feedbacks.count - 1
             feedbackStack.addArrangedSubview(makeFeedbackRow(email: email, date: date, message: message, isLast: isLast))
         }
     }
+
+    // MARK: – Row builders
+
     func makeRatingRow(email: String, date: String, stars: Int, isLast: Bool) -> UIView {
         let row = UIView()
         row.backgroundColor = .appSurface
         row.translatesAutoresizingMaskIntoConstraints = false
-        
-        let avatar = makeAvatar(email: email)
-        row.addSubview(avatar)
-        
+
+        let avatar     = makeAvatar(email: email)
         let emailLabel = UILabel()
-        emailLabel.text = email
+        emailLabel.text      = email
         emailLabel.textColor = .label
-        emailLabel.font = .systemFont(ofSize: 14, weight: .bold)
+        emailLabel.font      = .systemFont(ofSize: 14, weight: .bold)
         emailLabel.translatesAutoresizingMaskIntoConstraints = false
-        row.addSubview(emailLabel)
-     
+
         let dateLabel = UILabel()
-        dateLabel.text = date
-        dateLabel.font = .systemFont(ofSize: 12, weight: .regular)
+        dateLabel.text      = date
+        dateLabel.font      = .systemFont(ofSize: 12)
         dateLabel.textColor = .systemGray3
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        row.addSubview(dateLabel)
-        
+
         let starsLabel = UILabel()
         starsLabel.attributedText = makeStars(count: stars)
         starsLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        row.addSubview(avatar)
+        row.addSubview(emailLabel)
+        row.addSubview(dateLabel)
         row.addSubview(starsLabel)
-        
-        if !isLast {
-            let div = UIView()
-            div.backgroundColor = .systemGray5
-            div.translatesAutoresizingMaskIntoConstraints = false
-            row.addSubview(div)
-            
-            NSLayoutConstraint.activate([
-                div.bottomAnchor.constraint(equalTo: row.bottomAnchor),
-                div.leadingAnchor.constraint(equalTo: row.leadingAnchor, constant: 70),
-                div.trailingAnchor.constraint(equalTo: row.trailingAnchor),
-                div.heightAnchor.constraint(equalToConstant: 0.5)
-            ])
-        }
-        
+
+        if !isLast { row.addSubview(makeDivider(from: 70)) }
+
         NSLayoutConstraint.activate([
             row.heightAnchor.constraint(equalToConstant: 72),
 
@@ -339,55 +322,41 @@ class AdminView: UIView {
             starsLabel.centerYAnchor.constraint(equalTo: row.centerYAnchor),
             starsLabel.trailingAnchor.constraint(equalTo: row.trailingAnchor, constant: -14)
         ])
-        
         return row
-        
-        
-        
     }
-    
+
     func makeFeedbackRow(email: String, date: String, message: String, isLast: Bool) -> UIView {
         let row = UIView()
         row.backgroundColor = .appSurface
         row.translatesAutoresizingMaskIntoConstraints = false
 
         let avatar = makeAvatar(email: email)
-        row.addSubview(avatar)
 
         let emailLabel = UILabel()
-        emailLabel.text = email
-        emailLabel.font = .systemFont(ofSize: 14, weight: .bold)
+        emailLabel.text      = email
+        emailLabel.font      = .systemFont(ofSize: 14, weight: .bold)
         emailLabel.textColor = .label
         emailLabel.translatesAutoresizingMaskIntoConstraints = false
-        row.addSubview(emailLabel)
-        
+
         let dateLabel = UILabel()
-        dateLabel.text = date
-        dateLabel.font = .systemFont(ofSize: 12)
+        dateLabel.text      = date
+        dateLabel.font      = .systemFont(ofSize: 12)
         dateLabel.textColor = .systemGray3
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        row.addSubview(dateLabel)
-        
+
         let messageLabel = UILabel()
-        messageLabel.text = message
-        messageLabel.font = .systemFont(ofSize: 13)
-        messageLabel.textColor = .secondaryLabel
+        messageLabel.text          = message
+        messageLabel.font          = .systemFont(ofSize: 13)
+        messageLabel.textColor     = .secondaryLabel
         messageLabel.numberOfLines = 2
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        row.addSubview(avatar)
+        row.addSubview(emailLabel)
+        row.addSubview(dateLabel)
         row.addSubview(messageLabel)
 
-        if !isLast {
-            let div = UIView()
-            div.backgroundColor = .systemGray5
-            div.translatesAutoresizingMaskIntoConstraints = false
-            row.addSubview(div)
-            NSLayoutConstraint.activate([
-                div.bottomAnchor.constraint(equalTo: row.bottomAnchor),
-                div.leadingAnchor.constraint(equalTo: row.leadingAnchor, constant: 70),
-                div.trailingAnchor.constraint(equalTo: row.trailingAnchor),
-                div.heightAnchor.constraint(equalToConstant: 0.5)
-            ])
-        }
+        if !isLast { row.addSubview(makeDivider(from: 70)) }
 
         NSLayoutConstraint.activate([
             avatar.topAnchor.constraint(equalTo: row.topAnchor, constant: 14),
@@ -406,80 +375,92 @@ class AdminView: UIView {
             messageLabel.trailingAnchor.constraint(equalTo: row.trailingAnchor, constant: -14),
             messageLabel.bottomAnchor.constraint(equalTo: row.bottomAnchor, constant: -14)
         ])
-
         return row
     }
-    
+
+    // MARK: – Helpers
+
+    private func makeDivider(from leading: CGFloat) -> UIView {
+        let div = UIView()
+        div.backgroundColor = .systemGray5
+        div.translatesAutoresizingMaskIntoConstraints = false
+        // constraints pinned to superview — call after addSubview
+        return div
+    }
+
+    // Override to pin divider after it's added to row
+    private func addDividerConstraints(_ div: UIView, in row: UIView, leading: CGFloat) {
+        NSLayoutConstraint.activate([
+            div.bottomAnchor.constraint(equalTo: row.bottomAnchor),
+            div.leadingAnchor.constraint(equalTo: row.leadingAnchor, constant: leading),
+            div.trailingAnchor.constraint(equalTo: row.trailingAnchor),
+            div.heightAnchor.constraint(equalToConstant: 0.5)
+        ])
+    }
+
     func makeAvatar(email: String) -> UIView {
-        let container = UIView()
-        container.layer.cornerRadius = 20
-        container.translatesAutoresizingMaskIntoConstraints = false
-        
         let colors: [UIColor] = [.systemGreen, .systemBlue, .systemOrange, .systemPurple, .systemPink, .systemTeal]
         let index = Int(email.unicodeScalars.first?.value ?? 0) % colors.count
+
+        let container = UIView()
+        container.layer.cornerRadius = 20
         container.backgroundColor = colors[index].withAlphaComponent(0.2)
-        
+        container.translatesAutoresizingMaskIntoConstraints = false
+
         let label = UILabel()
-        label.text = String(email.prefix(1)).uppercased()
-        label.textColor = colors[index]
-        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.text          = String(email.prefix(1)).uppercased()
+        label.textColor     = colors[index]
+        label.font          = .systemFont(ofSize: 16, weight: .bold)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(label)
-        
-        NSLayoutConstraint.activate([
-               label.centerXAnchor.constraint(equalTo: container.centerXAnchor),
-               label.centerYAnchor.constraint(equalTo: container.centerYAnchor)
-           ])
 
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: container.centerYAnchor)
+        ])
         return container
-        
     }
+
     func makeStars(count: Int) -> NSAttributedString {
-        let filled = UIColor.orange
-        let empty = UIColor.systemGray3
         let result = NSMutableAttributedString()
         for i in 1...5 {
-            let star = NSAttributedString(
+            result.append(NSAttributedString(
                 string: "★",
-                attributes: [.foregroundColor: i <= count ? filled : empty,
-                             .font: UIFont.systemFont(ofSize: 18)]
-
-            )
-            result.append(star)
+                attributes: [
+                    .foregroundColor: i <= count ? UIColor.orange : UIColor.systemGray3,
+                    .font: UIFont.systemFont(ofSize: 18)
+                ]
+            ))
         }
         return result
     }
+
     private func makeEmptyRow(_ text: String) -> UIView {
         let row = UIView()
         row.backgroundColor = .appSurface
-        row.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        row.heightAnchor.constraint(equalToConstant: 56).isActive = true
+
         let label = UILabel()
-        label.text = text
-        label.font = .systemFont(ofSize: 14)
-        label.textColor = .systemGray
+        label.text          = text
+        label.font          = .systemFont(ofSize: 14)
+        label.textColor     = .systemGray
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         row.addSubview(label)
+
         NSLayoutConstraint.activate([
             label.centerXAnchor.constraint(equalTo: row.centerXAnchor),
             label.centerYAnchor.constraint(equalTo: row.centerYAnchor)
         ])
         return row
     }
-    
-    func formatDate(value: Any?) -> String {
-        if let timestamp = value as? Timestamp {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "d MMM, HH:mm"
-            formatter.locale = Locale(identifier: "kk_KZ")
-            return formatter.string(from: timestamp.dateValue())
-        }
-        return "—"
-    }
-    
 
-    
-    
-    
+    func formatDate(value: Any?) -> String {
+        guard let timestamp = value as? Timestamp else { return "—" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM, HH:mm"
+        formatter.locale = Locale(identifier: "kk_KZ")
+        return formatter.string(from: timestamp.dateValue())
+    }
 }

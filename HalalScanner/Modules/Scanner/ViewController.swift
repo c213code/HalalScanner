@@ -144,7 +144,7 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
         runDetection(image: image)
     }
 
-    // Detection logic stays in VC — UIKit (UIImage) never enters the ViewModel
+    
     func runDetection(image: UIImage) {
         guard !viewModel.isDetecting else { return }
         guard let model = ModelManager.shared.model else {

@@ -45,7 +45,7 @@ class ProductSheetViewModel {
           }
       }
 
-      // Color mapping lives in the View layer (ProductSheetView)
+      
       var halalStatus: HalalStatus { product.halalStatus }
     var isHalal: Bool {
         switch product.halalStatus {

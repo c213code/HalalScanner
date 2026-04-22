@@ -38,7 +38,7 @@ class ProductSheetView : UIView {
         categoryLabel.text = viewModel.category
         halalBadge.configure(isHalal: viewModel.isHalal)
 
-        // Color mapping belongs in the View layer
+        
         switch viewModel.halalStatus {
         case .halal:
             emojiContainer.backgroundColor  = .appCardGreen

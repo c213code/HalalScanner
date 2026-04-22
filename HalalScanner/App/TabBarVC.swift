@@ -44,7 +44,16 @@ class TabBarVC: UITabBarController {
         
         
         
-        viewControllers = [historyVC, scannerVC, favoritesVC, profileVC]
+        // Show Admin tab only for admin role (saved to UserDefaults at login)
+        let isAdmin = UserDefaults.standard.string(forKey: "userRole") == "admin"
+        if isAdmin {
+            let adminVCRoot = AdminVC()
+            let adminVC = UINavigationController(rootViewController: adminVCRoot)
+            adminVC.tabBarItem = UITabBarItem(title: "Админ", image: UIImage(systemName: "shield.checkered"), tag: 4)
+            viewControllers = [historyVC, scannerVC, favoritesVC, profileVC, adminVC]
+        } else {
+            viewControllers = [historyVC, scannerVC, favoritesVC, profileVC]
+        }
 
         tabBar.tintColor = UIColor.appGreen
 

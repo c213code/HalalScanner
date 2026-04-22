@@ -53,11 +53,11 @@ class ScanCell: UITableViewCell {
             iconLabel.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor)
         ])
         
-        nameLabel.font = .systemFont(ofSize: 20, weight: .bold)
+        nameLabel.font = .systemFont(ofSize: 18, weight: .bold)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.numberOfLines = 0
         
-        categoryLabel.font = .systemFont(ofSize: 17, weight: .regular)
+        categoryLabel.font = .systemFont(ofSize: 15, weight: .regular)
         categoryLabel.textColor = .systemGray3
         
         
@@ -75,7 +75,7 @@ class ScanCell: UITableViewCell {
             halalBadge.trailingAnchor.constraint(equalTo: halalBadge.trailingAnchor, constant: -15)
         ])
         
-        dateLabel.font = .systemFont(ofSize: 16, weight: .regular)
+        dateLabel.font = .systemFont(ofSize: 14, weight: .regular)
         dateLabel.textColor = .systemGray3
         dateLabel.textAlignment = .right
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
