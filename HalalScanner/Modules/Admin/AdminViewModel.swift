@@ -23,7 +23,7 @@ class AdminViewModel: ObservableObject {
         DispatchQueue.main.async { self.isLoading = true }
         let group = DispatchGroup()
 
-        // Users count
+        
         group.enter()
         Firestore.firestore().collection("users").getDocuments { [weak self] snapshot, _ in
             let count = snapshot?.documents.count ?? 0
@@ -31,7 +31,7 @@ class AdminViewModel: ObservableObject {
             group.leave()
         }
 
-        // Ratings
+        
         group.enter()
         Firestore.firestore().collection("ratings")
             .order(by: "date", descending: true)
@@ -52,7 +52,7 @@ class AdminViewModel: ObservableObject {
                 group.leave()
             }
 
-        // Feedbacks
+        
         group.enter()
         Firestore.firestore().collection("feedback")
             .order(by: "date", descending: true)
@@ -70,7 +70,7 @@ class AdminViewModel: ObservableObject {
                 group.leave()
             }
 
-        // All done
+        
         group.notify(queue: .main) { [weak self] in
             self?.isLoading = false
         }

@@ -89,7 +89,7 @@ class ViewController: UIViewController {
     
     
     func setupCamera() {
-        captureSession.sessionPreset = .hd1280x720  // smaller than .photo → faster inference
+        captureSession.sessionPreset = .hd1280x720
         
         guard let device = AVCaptureDevice.default(for: .video) else { return }
         
@@ -164,10 +164,9 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
 
         viewModel.beginDetection()
 
-        // Downscale to 640px — model doesn't need full resolution, runs much faster
+  
         let smallImage = image.resized(toMaxSide: 640)
 
-        // Timeout: if model doesn't respond in 10s — reset
         var didRespond = false
         DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
             guard let self, !didRespond else { return }

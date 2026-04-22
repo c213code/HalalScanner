@@ -44,7 +44,7 @@ class TabBarVC: UITabBarController {
         
         
         
-        // Show Admin tab only for admin role (saved to UserDefaults at login)
+        
         let isAdmin = UserDefaults.standard.string(forKey: "userRole") == "admin"
         if isAdmin {
             let adminVCRoot = AdminVC()

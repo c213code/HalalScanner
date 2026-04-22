@@ -29,13 +29,13 @@ class HistoryView : UIView {
         tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0)
         addSubview(tableView)
 
-        // Loading spinner
+        
         spinner.translatesAutoresizingMaskIntoConstraints = false
         spinner.color = .appGreen
         spinner.hidesWhenStopped = true
         addSubview(spinner)
 
-        // Empty state
+        
         let emptyIcon  = UILabel()
         emptyIcon.text = "🔍"
         emptyIcon.font = .systemFont(ofSize: 50)
