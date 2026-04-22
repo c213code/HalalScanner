@@ -39,9 +39,9 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if captureSession.inputs.isEmpty {
-            DispatchQueue.global(qos: .userInitiated).async {
-                self.setupCamera()
-                self.captureSession.startRunning()
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                self?.setupCamera()
+                self?.captureSession.startRunning()
             }
         }
     }
@@ -101,7 +101,8 @@ class ViewController: UIViewController {
             previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
             previewLayer.videoGravity = .resizeAspectFill
             
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
                 self.previewLayer.frame = self.view.bounds
                 self.view.layer.insertSublayer(self.previewLayer, at: 0)
             }

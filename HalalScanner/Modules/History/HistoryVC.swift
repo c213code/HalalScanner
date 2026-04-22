@@ -74,10 +74,10 @@ class HistoryVC: UIViewController {
         guard !UserDefaults.standard.bool(forKey: keyForhistory) else { return }
         UserDefaults.standard.set(true, forKey: keyForhistory)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
             let hint = UIAlertController(title: "💡 Кеңес", message: "Элементті солға тартыңыз — элеменетті сақтайсыз", preferredStyle: .alert)
             hint.addAction(UIAlertAction(title: "Түсіндім!", style: .default))
-            self.present(hint, animated: true)
+            self?.present(hint, animated: true)
         }
         
         
@@ -112,11 +112,11 @@ extension HistoryVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        let saveAction = UIContextualAction(style: .normal, title: "Сақтау") {_, _, completion in
+        let saveAction = UIContextualAction(style: .normal, title: "Сақтау") { [weak self] _, _, completion in
+            guard let self else { completion(false); return }
             let scan = self.viewModel.scans[indexPath.section]
             self.saveToFavorites(scan: scan)
             completion(true)
-
         }
         saveAction.backgroundColor = UIColor.systemOrange
         return UISwipeActionsConfiguration(actions: [saveAction])

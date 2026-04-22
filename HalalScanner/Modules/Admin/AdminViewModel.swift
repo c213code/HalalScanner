@@ -20,7 +20,7 @@ class AdminViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
 
     func fetchData() {
-        DispatchQueue.main.async { self.isLoading = true }
+        DispatchQueue.main.async { [weak self] in self?.isLoading = true }
         let group = DispatchGroup()
 
         

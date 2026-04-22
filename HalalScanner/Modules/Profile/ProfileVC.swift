@@ -80,9 +80,10 @@ class ProfileVC: UIViewController {
         let saveAction = UIAlertAction(title: "Сақтау", style: .default) { [weak self] _ in
             guard let self = self, let newName = alert.textFields?.first?.text,!newName.trimmingCharacters(in: .whitespaces).isEmpty else { return }
             
-            self.viewModel.updateName(newName) { success in
+            self.viewModel.updateName(newName) { [weak self] success in
+                guard let self else { return }
                 if !success {
-                    let errrorAlert = UIAlertController(title: "Қате", message:  "Атыңызды сақтау мүмкін болмады", preferredStyle: .alert)
+                    let errrorAlert = UIAlertController(title: "Қате", message: "Атыңызды сақтау мүмкін болмады", preferredStyle: .alert)
                     errrorAlert.addAction(UIAlertAction(title: "Ок", style: .default))
                     self.present(errrorAlert, animated: true)
                 }
@@ -125,7 +126,8 @@ class ProfileVC: UIViewController {
                 return
             }
             
-            self.viewModel.updatePassword(current: current, new: confirm) { result in
+            self.viewModel.updatePassword(current: current, new: confirm) { [weak self] result in
+                guard let self else { return }
                 switch result {
                 case .success:
                     let ok = UIAlertController(title: "✅", message: "Пароль сәтті өзгертілді", preferredStyle: .alert)

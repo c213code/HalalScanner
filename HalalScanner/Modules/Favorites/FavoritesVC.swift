@@ -79,10 +79,10 @@ class FavoritesVC: UIViewController {
         guard !UserDefaults.standard.bool(forKey: key) else { return }
         UserDefaults.standard.set(true, forKey: key)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
             let hint = UIAlertController(title: "💡 Кеңес", message: "Элементті жою үшін оны басып ұстаңыз", preferredStyle: .alert)
             hint.addAction(UIAlertAction(title: "Түсіндім!", style: .default))
-            self.present(hint, animated: true)
+            self?.present(hint, animated: true)
         }
         
         
@@ -101,9 +101,9 @@ extension FavoritesVC: UICollectionViewDelegate, UICollectionViewDataSource {
         
     }
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-            let delete = UIAction(title: "Жою", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                self.deleteFromFavorites(at: indexPath)
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            let delete = UIAction(title: "Жою", image: UIImage(systemName: "trash"), attributes: .destructive) { [weak self] _ in
+                self?.deleteFromFavorites(at: indexPath)
             }
             return UIMenu(title: "", children: [delete])
         }

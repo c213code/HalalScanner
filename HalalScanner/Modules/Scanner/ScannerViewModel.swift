@@ -9,7 +9,7 @@ import Combine
 import FirebaseAuth
 import Firebase
 
-class ScannerViewModel {
+class ScannerViewModel: ObservableObject {
     
     @Published var statusText = "Preparing scanner..."
     @Published var isReady = false
