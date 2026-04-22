@@ -134,16 +134,52 @@ class ViewController: UIViewController {
     }
 }
 extension ViewController: AVCapturePhotoCaptureDelegate {
-    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?){
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         print("PHOTO CAPTURED")
-        guard let data = photo.fileDataRepresentation() else {
+        guard let data = photo.fileDataRepresentation(),
+              let image = UIImage(data: data) else {
             print("NO PHOTO DATA")
             return
         }
-        guard let image = UIImage(data: data) else {
-            print("CANNOT CREATE UIIMAGE")
+        runDetection(image: image)
+    }
+
+    // Detection logic stays in VC — UIKit (UIImage) never enters the ViewModel
+    func runDetection(image: UIImage) {
+        guard !viewModel.isDetecting else { return }
+
+        let foodModel  = ModelManager.shared.getModel(named: "food")
+        let dairyModel = ModelManager.shared.getModel(named: "dairy")
+        let models = [foodModel, dairyModel].compactMap { $0 }
+
+        guard !models.isEmpty else {
+            viewModel.handleResult(label: nil, confidence: 0)
             return
         }
-        viewModel.detect(image: image)
+
+        viewModel.beginDetection()
+
+        var bestLabel: String?
+        var bestConfidence = 0
+        let group = DispatchGroup()
+
+        for model in models {
+            group.enter()
+            model.detect(image: image) { predictions, _ in
+                if let first = predictions?.first {
+                    let values     = first.getValues()
+                    let label      = (values["class"] as? String ?? "").lowercased()
+                    let confidence = Int(((values["confidence"] as? NSNumber)?.doubleValue ?? 0) * 100)
+                    if confidence > bestConfidence {
+                        bestLabel      = label
+                        bestConfidence = confidence
+                    }
+                }
+                group.leave()
+            }
+        }
+        group.notify(queue: .main) { [weak self] in
+            self?.viewModel.handleResult(label: bestLabel, confidence: bestConfidence)
+        }
     }
 }
