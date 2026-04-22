@@ -50,12 +50,18 @@ class ProductSheetVC: UIViewController {
     }
     
     @objc func saveTapped() {
+        productSheetView.saveButton.isEnabled = false
+        productSheetView.saveButton.setTitle("Сақталуда...", for: .normal)
+
         viewModel.saveToFavorites { [weak self] success in
             DispatchQueue.main.async {
+                guard let self else { return }
                 if success {
-                    print("СОХРАНЕНО!")
+                    self.dismiss(animated: true)
                 } else {
-                    print("Ошибка при сохранении")
+                    self.productSheetView.saveButton.isEnabled = true
+                    self.productSheetView.saveButton.setTitle("Қайта көру", for: .normal)
+                    self.productSheetView.saveButton.backgroundColor = .appHaramText
                 }
             }
         }
