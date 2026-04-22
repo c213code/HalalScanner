@@ -66,7 +66,7 @@ class ScannerView : UIView {
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         statusLabel.text = "No Food Detected ❌"
         statusLabel.padding = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-        statusLabel.backgroundColor = UIColor.gray.withAlphaComponent(0.7)
+        statusLabel.backgroundColor = .appScannerStatus
         
         statusLabel.layer.cornerRadius = 10
         
@@ -224,7 +224,7 @@ class ScannerView : UIView {
         
         [nameLabel, halalLabel].forEach {
             $0.textColor = .white
-            $0.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+            $0.backgroundColor = .appOverlayLabel
             $0.layer.cornerRadius = 14
             $0.layer.masksToBounds = true
             $0.textAlignment = .center
@@ -272,7 +272,7 @@ class ScannerView : UIView {
             let maskLayer = CAShapeLayer()
             maskLayer.path = path.cgPath
             maskLayer.fillRule = .evenOdd
-            maskLayer.fillColor = UIColor.black.withAlphaComponent(0.55).cgColor
+            maskLayer.fillColor = UIColor.appOverlayMask.cgColor
             
             overlayView.layer.addSublayer(maskLayer)
         }
@@ -290,7 +290,7 @@ class ScannerView : UIView {
             }
         }
         statusLabel.text = "Анализдалуда... ⏳"
-        statusLabel.backgroundColor = UIColor.appGreen.withAlphaComponent(0.85)
+        statusLabel.backgroundColor = .appScannerActive
         UIView.animate(withDuration: 0.6, delay: 0, options: [.repeat, .autoreverse, .allowUserInteraction]) {
             self.statusLabel.alpha = 0.4
         }
@@ -301,7 +301,7 @@ class ScannerView : UIView {
         UIView.animate(withDuration: 0.2) {
             self.statusLabel.alpha = 1
         }
-        statusLabel.backgroundColor = UIColor.gray.withAlphaComponent(0.7)
+        statusLabel.backgroundColor = .appScannerStatus
 
     }
     
