@@ -37,11 +37,19 @@ class HistoryVC: UIViewController {
         fetchScans()
     }
     func bindViewModel() {
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] loading in
+                if loading { self?.historyView.showLoading() }
+            }
+            .store(in: &cancellables)
+
         viewModel.$scans
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] scans in
                 self?.historyView.tableView.reloadData()
-        }
+                self?.historyView.showContent(isEmpty: scans.isEmpty)
+            }
             .store(in: &cancellables)
     }
   
