@@ -33,7 +33,7 @@ class AppCoordinator {
         window.makeKeyAndVisible()
     }
 
-    /// Fetches role from Firestore, saves to UserDefaults, then shows main UI
+    
     func fetchRoleAndShowMain() {
         guard let uid = Auth.auth().currentUser?.uid else { showMain(); return }
         Firestore.firestore().collection("users").document(uid).getDocument { [weak self] snapshot, _ in

@@ -147,39 +147,19 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
     // Detection logic stays in VC — UIKit (UIImage) never enters the ViewModel
     func runDetection(image: UIImage) {
         guard !viewModel.isDetecting else { return }
-
-        let foodModel  = ModelManager.shared.getModel(named: "food")
-        let dairyModel = ModelManager.shared.getModel(named: "dairy")
-        let models = [foodModel, dairyModel].compactMap { $0 }
-
-        guard !models.isEmpty else {
+        guard let model = ModelManager.shared.model else {
             viewModel.handleResult(label: nil, confidence: 0)
             return
         }
 
         viewModel.beginDetection()
 
-        var bestLabel: String?
-        var bestConfidence = 0
-        let group = DispatchGroup()
-
-        for model in models {
-            group.enter()
-            model.detect(image: image) { predictions, _ in
-                if let first = predictions?.first {
-                    let values     = first.getValues()
-                    let label      = (values["class"] as? String ?? "").lowercased()
-                    let confidence = Int(((values["confidence"] as? NSNumber)?.doubleValue ?? 0) * 100)
-                    if confidence > bestConfidence {
-                        bestLabel      = label
-                        bestConfidence = confidence
-                    }
-                }
-                group.leave()
+        model.detect(image: image) { [weak self] predictions, _ in
+            let label      = (predictions?.first?.getValues()["class"] as? String)?.lowercased()
+            let confidence = Int(((predictions?.first?.getValues()["confidence"] as? NSNumber)?.doubleValue ?? 0) * 100)
+            DispatchQueue.main.async {
+                self?.viewModel.handleResult(label: label, confidence: confidence)
             }
-        }
-        group.notify(queue: .main) { [weak self] in
-            self?.viewModel.handleResult(label: bestLabel, confidence: bestConfidence)
         }
     }
 }

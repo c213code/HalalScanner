@@ -5,55 +5,35 @@ import Roboflow
 class ModelManager {
     static let shared = ModelManager()
 
-    
-    var models: [String: RFModel] = [:]
+    private(set) var model: RFModel?
     var isReady = false
     private var isLoading = false
 
-    
     private let rf = RoboflowMobile(apiKey: Secrets.roboflowKey)
 
-    
-    private let projectConfigs = [
-        "food": (id: "food-ksjo4", version: 3),
-        "dairy": (id: "-tv4zs", version: 4)
-    ]
+    // Dairy products model (-tv4zs, version 8)
+    private let projectID = "-tv4zs"
+    private let projectVersion = 8
 
     func preload(completion: (() -> Void)? = nil) {
         guard !isReady, !isLoading else {
             completion?()
             return
         }
-
         isLoading = true
-        let group = DispatchGroup()
 
-        for (name, config) in projectConfigs {
-            group.enter()
-            
-            rf.load(model: config.id, modelVersion: config.version) { model, error, _, _ in
-                if let error = error {
-                    print("Ошибка загрузки модели \(name):", error.localizedDescription)
-                } else if let model = model {
-                    self.models[name] = model
-                    
-                    model.configure(threshold: 0.4, overlap: 0.3, maxObjects: 3)
-                    print("Модель \(name) успешно загружена")
-                }
-                group.leave()
+        rf.load(model: projectID, modelVersion: projectVersion) { [weak self] rfModel, error, _, _ in
+            guard let self else { return }
+            if let error = error {
+                print("Ошибка загрузки модели:", error.localizedDescription)
+            } else if let rfModel {
+                self.model = rfModel
+                rfModel.configure(threshold: 0.4, overlap: 0.3, maxObjects: 3)
+                print("Модель готова:", self.projectID)
             }
-        }
-
-        group.notify(queue: .main) {
-            self.isReady = true
+            self.isReady = self.model != nil
             self.isLoading = false
-            print("Все модели готовы к работе: \(self.models.keys)")
             completion?()
         }
-    }
-    
-    
-    func getModel(named name: String) -> RFModel? {
-        return models[name]
     }
 }
