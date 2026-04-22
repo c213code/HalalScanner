@@ -89,7 +89,7 @@ class ViewController: UIViewController {
     
     
     func setupCamera() {
-        captureSession.sessionPreset = .photo
+        captureSession.sessionPreset = .hd1280x720  // smaller than .photo → faster inference
         
         guard let device = AVCaptureDevice.default(for: .video) else { return }
         
@@ -133,6 +133,16 @@ class ViewController: UIViewController {
         
     }
 }
+private extension UIImage {
+    func resized(toMaxSide maxSide: CGFloat) -> UIImage {
+        let scale = min(maxSide / size.width, maxSide / size.height, 1)
+        guard scale < 1 else { return self }
+        let newSize = CGSize(width: size.width * scale, height: size.height * scale)
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        return renderer.image { _ in draw(in: CGRect(origin: .zero, size: newSize)) }
+    }
+}
+
 extension ViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         print("PHOTO CAPTURED")
@@ -154,11 +164,24 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
 
         viewModel.beginDetection()
 
-        model.detect(image: image) { [weak self] predictions, _ in
+        // Downscale to 640px — model doesn't need full resolution, runs much faster
+        let smallImage = image.resized(toMaxSide: 640)
+
+        // Timeout: if model doesn't respond in 10s — reset
+        var didRespond = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
+            guard let self, !didRespond else { return }
+            didRespond = true
+            self.viewModel.handleResult(label: nil, confidence: 0)
+        }
+
+        model.detect(image: smallImage) { [weak self] predictions, _ in
+            guard let self, !didRespond else { return }
+            didRespond = true
             let label      = (predictions?.first?.getValues()["class"] as? String)?.lowercased()
             let confidence = Int(((predictions?.first?.getValues()["confidence"] as? NSNumber)?.doubleValue ?? 0) * 100)
             DispatchQueue.main.async {
-                self?.viewModel.handleResult(label: label, confidence: confidence)
+                self.viewModel.handleResult(label: label, confidence: confidence)
             }
         }
     }
