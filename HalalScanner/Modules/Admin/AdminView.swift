@@ -21,7 +21,7 @@ class AdminView: UIView {
     let ratingStack   = UIStackView()
     let feedbackStack = UIStackView()
 
-    // Stored anchor for stat stack so sections can chain off it
+    
     private var statStack: UIStackView!
 
     override init(frame: CGRect) {
@@ -35,7 +35,7 @@ class AdminView: UIView {
     }
     required init?(coder: NSCoder) { fatalError() }
 
-    // MARK: – Scroll
+    
 
     func setupScrollView() {
         scrollView.translatesAutoresizingMaskIntoConstraints  = false
@@ -57,7 +57,7 @@ class AdminView: UIView {
         ])
     }
 
-    // MARK: – Header card
+    
 
     func setupHeader() {
         headerCard.backgroundColor = UIColor.appGreen
@@ -115,7 +115,7 @@ class AdminView: UIView {
         ])
     }
 
-    // MARK: – Stat cards
+    
 
     func setupStatCards() {
         let stack = UIStackView()
@@ -126,7 +126,7 @@ class AdminView: UIView {
         contentView.addSubview(stack)
         statStack = stack
 
-        // ✅ bottomAnchor, not topAnchor
+        
         NSLayoutConstraint.activate([
             stack.topAnchor.constraint(equalTo: headerCard.bottomAnchor, constant: 16),
             stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
@@ -144,7 +144,7 @@ class AdminView: UIView {
                                         valueColor: .systemBlue, labelColor: .appBlueMuted,
                                         bgColor: .appBlueFaint, valueLabel: totalFeedbackLabel)
 
-        // ✅ addArrangedSubview for stack views
+        
         stack.addArrangedSubview(userCard)
         stack.addArrangedSubview(ratingCard)
         stack.addArrangedSubview(feedbackCard)
@@ -182,7 +182,7 @@ class AdminView: UIView {
         return card
     }
 
-    // MARK: – Sections
+    
 
     func makeSectionLabel(_ text: String) -> UILabel {
         let label = UILabel()
@@ -195,7 +195,7 @@ class AdminView: UIView {
 
     func setupRatingSection() {
         let label = makeSectionLabel("БАҒАЛАУЛАР")
-        contentView.addSubview(label)   // ✅ must add before activating constraints
+        contentView.addSubview(label)
 
         ratingStack.axis = .vertical
         ratingStack.spacing = 0
@@ -216,7 +216,7 @@ class AdminView: UIView {
 
     func setupFeedbackSection() {
         let label = makeSectionLabel("ПІКІРЛЕР")
-        contentView.addSubview(label)   // ✅ must add before activating constraints
+        contentView.addSubview(label)
 
         feedbackStack.axis = .vertical
         feedbackStack.spacing = 0
@@ -236,12 +236,12 @@ class AdminView: UIView {
         ])
     }
 
-    // MARK: – Update data
+    
 
     func updateStats(users: Int, avgRating: Double, feedbacks: Int) {
-        userValueLabel.text      = "\(users)"
-        avrRatingLabel.text      = avgRating == 0 ? "-" : String(format: "%.1f", avgRating)
-        totalFeedbackLabel.text  = "\(feedbacks)"
+        userValueLabel.text = "\(users)"
+        avrRatingLabel.text = avgRating == 0 ? "-" : String(format: "%.1f", avgRating)
+        totalFeedbackLabel.text = "\(feedbacks)"
     }
 
     func updateRatings(_ ratings: [[String: Any]]) {
@@ -251,9 +251,9 @@ class AdminView: UIView {
             return
         }
         ratings.enumerated().forEach { index, rating in
-            let email  = rating["email"]  as? String ?? "-"
-            let stars  = rating["stars"]  as? Int    ?? 0
-            let date   = formatDate(value: rating["date"])
+            let email = rating["email"]  as? String ?? "-"
+            let stars = rating["stars"]  as? Int    ?? 0
+            let date = formatDate(value: rating["date"])
             let isLast = index == ratings.count - 1
             ratingStack.addArrangedSubview(makeRatingRow(email: email, date: date, stars: stars, isLast: isLast))
         }
@@ -266,15 +266,15 @@ class AdminView: UIView {
             return
         }
         feedbacks.enumerated().forEach { index, feedback in
-            let email   = feedback["email"]   as? String ?? "—"
+            let email = feedback["email"]   as? String ?? "—"
             let message = feedback["message"] as? String ?? "—"
-            let date    = formatDate(value: feedback["date"])
-            let isLast  = index == feedbacks.count - 1
+            let date  = formatDate(value: feedback["date"])
+            let isLast = index == feedbacks.count - 1
             feedbackStack.addArrangedSubview(makeFeedbackRow(email: email, date: date, message: message, isLast: isLast))
         }
     }
 
-    // MARK: – Row builders
+    
 
     func makeRatingRow(email: String, date: String, stars: Int, isLast: Bool) -> UIView {
         let row = UIView()
@@ -283,14 +283,14 @@ class AdminView: UIView {
 
         let avatar     = makeAvatar(email: email)
         let emailLabel = UILabel()
-        emailLabel.text      = email
+        emailLabel.text  = email
         emailLabel.textColor = .label
-        emailLabel.font      = .systemFont(ofSize: 14, weight: .bold)
+        emailLabel.font = .systemFont(ofSize: 14, weight: .bold)
         emailLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let dateLabel = UILabel()
-        dateLabel.text      = date
-        dateLabel.font      = .systemFont(ofSize: 12)
+        dateLabel.text = date
+        dateLabel.font  = .systemFont(ofSize: 12)
         dateLabel.textColor = .systemGray3
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
 
@@ -333,21 +333,21 @@ class AdminView: UIView {
         let avatar = makeAvatar(email: email)
 
         let emailLabel = UILabel()
-        emailLabel.text      = email
-        emailLabel.font      = .systemFont(ofSize: 14, weight: .bold)
+        emailLabel.text  = email
+        emailLabel.font = .systemFont(ofSize: 14, weight: .bold)
         emailLabel.textColor = .label
         emailLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let dateLabel = UILabel()
-        dateLabel.text      = date
-        dateLabel.font      = .systemFont(ofSize: 12)
+        dateLabel.text  = date
+        dateLabel.font = .systemFont(ofSize: 12)
         dateLabel.textColor = .systemGray3
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
 
         let messageLabel = UILabel()
-        messageLabel.text          = message
-        messageLabel.font          = .systemFont(ofSize: 13)
-        messageLabel.textColor     = .secondaryLabel
+        messageLabel.text  = message
+        messageLabel.font = .systemFont(ofSize: 13)
+        messageLabel.textColor = .secondaryLabel
         messageLabel.numberOfLines = 2
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
 
@@ -378,17 +378,17 @@ class AdminView: UIView {
         return row
     }
 
-    // MARK: – Helpers
+    
 
     private func makeDivider(from leading: CGFloat) -> UIView {
         let div = UIView()
         div.backgroundColor = .systemGray5
         div.translatesAutoresizingMaskIntoConstraints = false
-        // constraints pinned to superview — call after addSubview
+        
         return div
     }
 
-    // Override to pin divider after it's added to row
+    
     private func addDividerConstraints(_ div: UIView, in row: UIView, leading: CGFloat) {
         NSLayoutConstraint.activate([
             div.bottomAnchor.constraint(equalTo: row.bottomAnchor),
@@ -408,9 +408,9 @@ class AdminView: UIView {
         container.translatesAutoresizingMaskIntoConstraints = false
 
         let label = UILabel()
-        label.text          = String(email.prefix(1)).uppercased()
-        label.textColor     = colors[index]
-        label.font          = .systemFont(ofSize: 16, weight: .bold)
+        label.text = String(email.prefix(1)).uppercased()
+        label.textColor   = colors[index]
+        label.font = .systemFont(ofSize: 16, weight: .bold)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(label)
@@ -442,9 +442,9 @@ class AdminView: UIView {
         row.heightAnchor.constraint(equalToConstant: 56).isActive = true
 
         let label = UILabel()
-        label.text          = text
-        label.font          = .systemFont(ofSize: 14)
-        label.textColor     = .systemGray
+        label.text = text
+        label.font   = .systemFont(ofSize: 14)
+        label.textColor  = .systemGray
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         row.addSubview(label)

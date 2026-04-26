@@ -42,20 +42,20 @@ class ProductSheetView : UIView {
         
         switch viewModel.halalStatus {
         case .halal:
-            emojiContainer.backgroundColor  = .appCardGreen
-            statusValueLabel.textColor       = .appGreen
+            emojiContainer.backgroundColor = .appCardGreen
+            statusValueLabel.textColor = .appGreen
         case .haram:
-            emojiContainer.backgroundColor  = .appCardRed
-            statusValueLabel.textColor       = .appHaramText
+            emojiContainer.backgroundColor = .appCardRed
+            statusValueLabel.textColor = .appHaramText
         case .doubtful:
-            emojiContainer.backgroundColor  = .appOrangeSubtle
-            statusValueLabel.textColor       = .systemOrange
+            emojiContainer.backgroundColor = .appOrangeSubtle
+            statusValueLabel.textColor = .systemOrange
         }
 
         confidenceValueLabel.text = viewModel.confidenceText
-        statusValueLabel.text     = viewModel.statusText
-        caloriesValueLabel.text   = viewModel.caloriesText
-        categoryValueLabel.text   = viewModel.category
+        statusValueLabel.text = viewModel.statusText
+        caloriesValueLabel.text = viewModel.caloriesText
+        categoryValueLabel.text = viewModel.category
 
         if let item = viewModel.haramItem {
             haramItemRow.isHidden = false

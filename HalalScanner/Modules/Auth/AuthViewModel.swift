@@ -67,7 +67,7 @@ class AuthViewModel: ObservableObject {
         let db = Firestore.firestore()
         let role = email == "admin@halal.com" ? "admin" : "user"
 
-        // Persist role locally so the app shows the right UI immediately on next launch
+        
         UserDefaults.standard.set(role, forKey: "userRole")
 
         db.collection("users").document(userId).setData([

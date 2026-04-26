@@ -22,14 +22,13 @@ struct Product {
     let calories: Int
     let haramItem: String?
 
-    init(name: String, emoji: String, halalStatus: HalalStatus,
-         category: String, calories: Int, haramItem: String? = nil) {
-        self.name        = name
-        self.emoji       = emoji
+    init(name: String, emoji: String, halalStatus: HalalStatus, category: String, calories: Int, haramItem: String? = nil) {
+        self.name  = name
+        self.emoji   = emoji
         self.halalStatus = halalStatus
-        self.category    = category
-        self.calories    = calories
-        self.haramItem   = haramItem
+        self.category  = category
+        self.calories  = calories
+        self.haramItem = haramItem
     }
 
     var isHalal: Bool {
